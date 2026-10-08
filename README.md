@@ -2,14 +2,16 @@
 
 Portal for the Sona College of Technology 1998–2002 batch reunion, July 16–18, 2027.
 
-## Phase 0 status
+## Phase 1 status
 
-- React, TypeScript, and Vite application
-- Automated lint, test, and production build
-- GitHub Pages deployment workflow
-- Supabase local configuration and first migration
-- Supabase Free cloud project in South Asia (Mumbai), linked to the local CLI
-- Initial architecture, privacy, deployment, rollback, and incident documentation
+- Branded public reunion portal with confirmed dates and venue
+- Reunion objectives and high-level three-day program
+- Introductions to all seven working committees
+- Public organizer announcements and volunteer calls to action
+- Public contact instructions and provisional privacy notice
+- Responsive layout and accessibility baseline
+- Automated lint, six tests, production build, CI, and GitHub Pages deployment
+- Supabase local and cloud foundation retained for later secure phases
 - No private alumni data
 
 ## Local setup

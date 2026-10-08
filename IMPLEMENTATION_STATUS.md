@@ -2,7 +2,7 @@
 
 **Project:** SCT 1998–2002 Silver Jubilee Reunion Portal  
 **Last updated:** October 8, 2026  
-**Current phase:** Phase 0 complete; MVP implementation not yet started  
+**Current phase:** Phase 1 complete; Phase 1B presentation portal is next
 **Production site:** <https://sona9802.github.io/>  
 **Repository:** <https://github.com/sona9802/sona9802.github.io>
 
@@ -21,7 +21,7 @@ This document tracks delivered work against the reunion portal product requireme
 |---|---|---|
 | Project foundation | ✅ | React, TypeScript, Vite, linting, tests, and production builds are configured. |
 | Hosting and delivery | ✅ | Public organization site, CI, and GitHub Pages deployment are operational. |
-| Public landing page | 🟡 | Event identity, dates, venue, countdown, and purpose are live; announcements, contact, privacy, and sign-in actions remain. |
+| Public landing page | ✅ | Phase 1 public content, program, committees, contact, privacy notice, announcements, and calls to action are implemented. |
 | Backend foundation | 🟡 | Supabase cloud project and initial public-settings schema exist; application integration is not implemented. |
 | Authentication and onboarding | ⬜ | No sign-in, invitations, verification, or account-to-alumni association. |
 | Alumni directory and profiles | ⬜ | No member schema or user interface. |
@@ -29,7 +29,7 @@ This document tracks delivered work against the reunion portal product requireme
 | Departments and representatives | ⬜ | No department schema, assignments, or coverage report. |
 | Committees and tasks | ⬜ | No committee, membership, task, dependency, or progress features. |
 | Organizer dashboard | ⬜ | No authenticated dashboard or operational summaries. |
-| Announcements | ⬜ | No managed announcement schema or publishing interface. |
+| Announcements | 🟡 | Static public announcements are implemented; managed publishing remains for a later phase. |
 | Biography and photograph workflow | ⬜ | No biography, storage, moderation, consent, or editorial workflow. |
 | Administration and audit | ⬜ | No administrative screens, role management, exports, or audit log. |
 
@@ -52,15 +52,22 @@ This document tracks delivered work against the reunion portal product requireme
 - ✅ Confirmed dates: July 16–18, 2027.
 - ✅ Venue: Sona College of Technology, Salem, Tamil Nadu.
 - ✅ Dynamic days-until-event countdown.
-- ✅ High-level Reconnect, Organize, and Remember purpose cards.
+- ✅ High-level Reconnect, Celebrate, and Contribute objectives.
+- ✅ High-level program covering all three reunion days.
+- ✅ Introductions to all seven working committees.
+- ✅ Static organizer-approved announcements.
+- ✅ Volunteer and contact calls to action using the public organizer email.
+- ✅ Provisional privacy notice and warning not to email sensitive information.
+- ✅ Metadata for search and social sharing.
+- ✅ Semantic landmarks, heading hierarchy, skip link, visible focus styles, and reduced-motion handling.
 - ✅ Responsive layout.
-- 🟡 Public landing-page acceptance criteria are incomplete because announcements, registration/sign-in, privacy/consent links, and an organizer contact channel are not present.
+- ✅ Phase 1 public-foundation acceptance criteria are implemented without collecting private data.
 
 ### Event logic and tests
 
 - ✅ Event date and venue constants are centralized in `src/lib/event.ts`.
 - ✅ Countdown calculation is tested before and after the event date.
-- ✅ Two automated tests pass.
+- ✅ Six automated tests pass across event logic and public content integrity.
 
 ### GitHub and deployment
 
@@ -93,6 +100,7 @@ This document tracks delivered work against the reunion portal product requireme
 - ✅ Deployment, rollback, and incident-response runbooks exist.
 - ✅ Decision log exists.
 - ✅ Phase 0 completion record exists.
+- ✅ Phase 1 completion record exists.
 - ✅ Repository guidance prohibits committing private alumni data, photographs, exports, and service-role credentials.
 
 ## MVP feature status
@@ -174,7 +182,7 @@ Verified on October 8, 2026:
 | Check | Result |
 |---|---|
 | `npm run lint` | ✅ Passed |
-| `npm test` | ✅ Passed: 2 tests |
+| `npm test` | ✅ Passed: 6 tests |
 | `npm run build` | ✅ Passed |
 | GitHub continuous integration | ✅ Passed |
 | GitHub Pages deployment | ✅ Passed |
@@ -185,14 +193,14 @@ Verified on October 8, 2026:
 
 ## Recommended next implementation slice
 
-Begin the member and RSVP foundation as one security-gated vertical slice:
+Implement Phase 1B as a clearly labeled, synthetic presentation experience:
 
-1. Add browser-safe Supabase client configuration.
-2. Implement authentication and protected routing.
-3. Add branches, members, roles, and RSVP migrations with Row Level Security.
-4. Add invitation-based onboarding and a basic self-service profile.
-5. Add the RSVP form and organizer attendance totals.
-6. Add automated policy and application tests before any real alumni data is entered.
+1. Add responsive navigation for the planned portal modules.
+2. Build clickable demo screens for directory, RSVP, departments, committees, tasks, dashboard, biographies, memories, program, and administration.
+3. Use synthetic data only and label every simulated workflow as demo behavior.
+4. Add happy-path demonstrations for volunteering, accepting a task, biography/photo submission, review, and book readiness.
+5. Add loading, empty, error, and mobile states without implying personal information was saved.
+6. Keep the Phase 1 public site available as the rollback target.
 
 ## Update procedure
 
