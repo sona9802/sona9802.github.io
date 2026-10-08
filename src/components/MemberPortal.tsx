@@ -126,10 +126,13 @@ export function MemberPortal() {
     const email = String(form.get('email') ?? '').trim()
     const invite = String(form.get('invite') ?? '').trim()
     if (invite) sessionStorage.setItem('reunion-invitation-token', invite)
+    const redirectUrl = new URL(window.location.pathname, window.location.origin)
+    if (invite) redirectUrl.searchParams.set('invite', invite)
+    redirectUrl.hash = 'member-portal'
     setLoading(true)
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}${window.location.pathname}#member-portal`, shouldCreateUser: true },
+      options: { emailRedirectTo: redirectUrl.toString(), shouldCreateUser: true },
     })
     setLoading(false)
     setMessage(error
