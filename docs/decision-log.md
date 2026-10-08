@@ -11,3 +11,4 @@
 | 2026-10-08 | Use reviewed static announcements for Phase 1 so the public foundation has no runtime dependency or private-data path. | Ashok Loganathan | Organizers need self-service announcement publishing |
 | 2026-10-08 | Require authenticated email to match a single-use invitation before creating an alumni profile; signing in alone grants no private-data access. | Ashok Loganathan | Organizers adopt another identity-verification process |
 | 2026-10-08 | Keep Phase 2 disabled in production until approved pilot emails, the first technical administrator, and exact auth redirects are configured and tested. | Ashok Loganathan | Pilot readiness checklist is complete |
+| 2026-10-08 | Bootstrap `sct9802@gmail.com` as the first technical administrator only after a single-use invitation and Supabase magic link prove control of the address; clear the bootstrap marker after acceptance. | Ashok Loganathan | First technical administrator accepts the invitation |

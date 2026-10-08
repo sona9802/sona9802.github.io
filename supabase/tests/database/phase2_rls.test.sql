@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(24);
+select plan(26);
 
 select has_table('public', 'departments', 'departments table exists');
 select has_table('public', 'invitations', 'invitations table exists');
@@ -101,6 +101,9 @@ values (
   '20000000-0000-0000-0000-000000000002',
   encode(extensions.digest('test-invitation-token', 'sha256'), 'hex'), now() + interval '1 day'
 );
+update public.invitations
+set bootstrap_technical_admin = true
+where id = '30000000-0000-0000-0000-000000000001';
 
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"10000000-0000-0000-0000-000000000007","role":"authenticated","email":"invited@example.test"}', true);
@@ -121,6 +124,14 @@ reset role;
 select results_eq(
   $$select count(*)::bigint from public.audit_events where actor_id = '10000000-0000-0000-0000-000000000007' and action = 'invitation.accepted'$$,
   'values (1::bigint)', 'invitation acceptance creates an audit event'
+);
+select results_eq(
+  $$select count(*)::bigint from public.user_roles where profile_id = '10000000-0000-0000-0000-000000000007' and role_name = 'technical_admin'$$,
+  'values (1::bigint)', 'bootstrap invitation grants the first technical administrator role'
+);
+select results_eq(
+  $$select verification_status from public.profiles where id = '10000000-0000-0000-0000-000000000007'$$,
+  $$values ('verified'::text)$$, 'bootstrap administrator is verified automatically'
 );
 
 set local role authenticated;

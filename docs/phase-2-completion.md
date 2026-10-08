@@ -1,7 +1,7 @@
 # Phase 2 Completion Record
 
 **Completed:** October 8, 2026  
-**Release state:** Implemented and deployed behind a disabled production feature flag
+**Release state:** Implemented and deployed; first-administrator pilot enabled
 
 ## Delivered
 
@@ -26,4 +26,4 @@
 
 ## Release control
 
-The production site intentionally shows a closed-pilot message. Before enabling sign-in, an operator must configure the browser-safe Supabase deployment values, verify the exact production redirect URL, approve pilot emails, bootstrap the first technical administrator, and complete the pilot checklist in `IMPLEMENTATION_STATUS.md`.
+The production Site URL, exact auth redirect, browser-safe deployment values, and Phase 2 flag are configured. A one-time invitation for `sct9802@gmail.com` is the only bootstrap path: after that email accepts the invitation, the database automatically grants the first technical-administrator role, verifies the profile, audits the action, and clears the bootstrap marker.

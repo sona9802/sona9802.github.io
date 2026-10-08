@@ -2,7 +2,7 @@
 
 **Project:** SCT 1998–2002 Silver Jubilee Reunion Portal  
 **Last updated:** October 8, 2026  
-**Current phase:** Phase 2 implemented; invitation pilot remains disabled pending organizer approval
+**Current phase:** Phase 2 implemented; first-administrator pilot enabled
 **Production site:** <https://sona9802.github.io/>  
 **Repository:** <https://github.com/sona9802/sona9802.github.io>
 
@@ -105,9 +105,10 @@ This document tracks delivered work against the reunion portal product requireme
 - ✅ Administrators can create invitations, review pending profiles, and see reunion-wide RSVP totals.
 - ✅ Sensitive administrative actions write append-only audit events without private field values.
 - ✅ Suspended profiles cannot use member data policies.
-- ✅ Twenty-four pgTAP assertions verify table presence, policies, anonymous denial, member isolation, department scope, suspension, invitation acceptance, default-off consent, auditing, and totals.
+- ✅ Twenty-six pgTAP assertions verify table presence, policies, anonymous denial, member isolation, department scope, suspension, invitation acceptance, default-off consent, first-admin bootstrap, auditing, and totals.
 - ✅ Cloud migration `202610080001_phase2_members_rsvp.sql` applied with no alumni seed data.
-- ✅ Production UI is feature-flagged closed until organizers authorize pilot members and configure the browser-safe deployment variables.
+- ✅ Production Site URL, exact redirect allowlist, browser-safe Supabase settings, and Phase 2 feature flag are configured.
+- 🟡 A single-use bootstrap invitation for `sct9802@gmail.com` is pending acceptance; it grants the first technical-administrator role only after email ownership is proven.
 
 ### Documentation and operations
 
@@ -200,7 +201,7 @@ Verified on October 8, 2026:
 |---|---|
 | `npm run lint` | ✅ Passed |
 | `npm test` | ✅ Passed: 8 tests |
-| `npm run test:db` | ✅ Passed: 24 pgTAP assertions |
+| `npm run test:db` | ✅ Passed: 26 pgTAP assertions |
 | `npm run build` | ✅ Passed |
 | Phase 2 local visual review | ✅ Desktop layout and member-portal navigation verified |
 | Phase 2 cloud migration | ✅ Applied; no seed records pushed |
@@ -215,12 +216,10 @@ Verified on October 8, 2026:
 
 Open the Phase 2 pilot safely:
 
-1. Approve one or more real pilot alumni email addresses.
-2. Configure the production Supabase URL, browser-safe publishable key, and exact auth redirect URL.
-3. Bootstrap the first technical administrator through an operator-reviewed one-time invitation.
-4. Enable `VITE_PHASE2_ENABLED` for the pilot deployment.
-5. Test magic-link delivery, invitation acceptance, profile review, RSVP updates, consent withdrawal, and department scoping with designated accounts.
-6. Keep the public Phase 1 experience as the immediate rollback while the pilot is evaluated.
+1. Accept the pending invitation for `sct9802@gmail.com` to create the first verified technical administrator.
+2. Create one additional pilot invitation from the Admin console using a separate working email.
+3. Test magic-link delivery, invitation acceptance, profile review, RSVP updates, consent withdrawal, and department scoping.
+4. Keep the public Phase 1 experience as the immediate rollback while the pilot is evaluated.
 
 ## Update procedure
 
