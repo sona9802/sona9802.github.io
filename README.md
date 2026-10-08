@@ -39,6 +39,6 @@ Never commit `.env.local`, Supabase service-role keys, personal data, photograph
 
 ## Deployed services
 
-- Portal: <https://sona98.github.io/>
-- Repository: <https://github.com/Sona98/sona98.github.io>
+- Portal: <https://sona9802.github.io/>
+- Repository: <https://github.com/sona9802/sona9802.github.io>
 - Supabase project reference: `bjoimszikocvkxjgieuc`

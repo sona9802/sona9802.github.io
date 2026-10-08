@@ -13,6 +13,6 @@ Develop and validate database migrations locally. Use one Supabase Free project 
 ## Consequences
 
 - Initial infrastructure has no recurring charge while it remains within free-tier limits.
-- The account site uses the `/` base path at `https://sona98.github.io/`; client-side routing must retain direct-load compatibility when application routes are introduced.
+- The organization site uses the `/` base path at `https://sona9802.github.io/`; client-side routing must retain direct-load compatibility when application routes are introduced.
 - Private data never belongs in GitHub.
 - Presentation seed data must be removed before real alumni data is accepted.

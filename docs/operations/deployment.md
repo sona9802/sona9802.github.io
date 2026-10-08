@@ -10,7 +10,7 @@
 
 ## GitHub Pages
 
-Merges and pushes to `main` trigger both validation and Pages deployment. The workflow builds with `/` as the base path for the `Sona98` account site and publishes the `dist` artifact.
+Merges and pushes to `main` trigger both validation and Pages deployment. The workflow builds with `/` as the base path for the `sona9802` organization site and publishes the `dist` artifact.
 
 After deployment, verify HTTPS, the page title, event dates, mobile layout, and browser console.
 
