@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { CONSENT_LABELS, invitationTokenFromLocation, normalizeCount, type ConsentType } from '../lib/phase2'
+import { buildAuthRedirectUrl, CONSENT_LABELS, invitationTokenFromLocation, normalizeCount, type ConsentType } from '../lib/phase2'
 import { phase2Enabled, supabase } from '../lib/supabase'
 
 type Profile = {
@@ -103,6 +103,9 @@ export function MemberPortal() {
   useEffect(() => {
     if (!phase2Enabled || !supabase) return
     const client = supabase
+    const callbackParams = new URLSearchParams(window.location.hash.slice(1))
+    const callbackError = callbackParams.get('error_description')
+    if (callbackError) setMessage({ kind: 'error', text: callbackError.replaceAll('+', ' ') })
     client.auth.getSession().then(({ data }) => {
       setSession(data.session)
       if (data.session) void loadMember(data.session.user.id)
@@ -119,6 +122,10 @@ export function MemberPortal() {
     return () => listener.subscription.unsubscribe()
   }, [loadMember])
 
+  useEffect(() => {
+    if (session) document.getElementById('member-portal')?.scrollIntoView({ block: 'start' })
+  }, [session])
+
   async function requestMagicLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!supabase) return
@@ -126,13 +133,11 @@ export function MemberPortal() {
     const email = String(form.get('email') ?? '').trim()
     const invite = String(form.get('invite') ?? '').trim()
     if (invite) sessionStorage.setItem('reunion-invitation-token', invite)
-    const redirectUrl = new URL(window.location.pathname, window.location.origin)
-    if (invite) redirectUrl.searchParams.set('invite', invite)
-    redirectUrl.hash = 'member-portal'
+    const redirectUrl = buildAuthRedirectUrl(window.location.origin, window.location.pathname, invite)
     setLoading(true)
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: redirectUrl.toString(), shouldCreateUser: true },
+      options: { emailRedirectTo: redirectUrl, shouldCreateUser: true },
     })
     setLoading(false)
     setMessage(error

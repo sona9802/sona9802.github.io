@@ -16,3 +16,9 @@ export function normalizeCount(value: FormDataEntryValue | null, maximum: number
 export function invitationTokenFromLocation(search: string): string {
   return new URLSearchParams(search).get('invite')?.trim() ?? ''
 }
+
+export function buildAuthRedirectUrl(origin: string, pathname: string, invitationToken: string): string {
+  const redirectUrl = new URL(pathname, origin)
+  if (invitationToken) redirectUrl.searchParams.set('invite', invitationToken)
+  return redirectUrl.toString()
+}
