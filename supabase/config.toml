@@ -18,10 +18,10 @@ port = 54323
 
 [auth]
 enabled = true
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173/**", "https://ashoklogan.github.io/sct-98-02-reunion/**"]
+site_url = "https://sona9802.github.io/"
+additional_redirect_urls = ["http://localhost:5173/**", "https://sona9802.github.io/**"]
 jwt_expiry = 3600
-enable_signup = false
+enable_signup = true
 
 [storage]
 enabled = true

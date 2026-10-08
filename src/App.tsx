@@ -1,5 +1,6 @@
 import { EVENT, getDaysUntilEvent } from './lib/event'
 import { ANNOUNCEMENTS, COMMITTEES, CONTACT_EMAIL, PROGRAM } from './lib/publicContent'
+import { MemberPortal } from './components/MemberPortal'
 
 const emailHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('SCT 1998–2002 reunion volunteer interest')}`
 
@@ -21,7 +22,7 @@ function App() {
           <a href="#committees">Committees</a>
           <a href="#updates">Updates</a>
         </nav>
-        <a className="button button--small button--dark" href={emailHref}>Help organize</a>
+        <a className="button button--small button--dark" href="#member-portal">Member portal</a>
       </header>
 
       <main id="main-content">
@@ -60,8 +61,8 @@ function App() {
 
         <section className="notice" aria-label="Latest announcement">
           <span className="notice__label">Now live</span>
-          <p><strong>The reunion’s public home has opened.</strong> Registration and RSVP arrive in the next secure release.</p>
-          <a href="#updates">Read updates <span aria-hidden="true">→</span></a>
+          <p><strong>The secure member portal is ready.</strong> Invitation-only pilot access opens after organizer approval.</p>
+          <a href="#member-portal">Portal status <span aria-hidden="true">→</span></a>
         </section>
 
         <section className="section reunion" id="reunion" aria-labelledby="reunion-title">
@@ -143,7 +144,7 @@ function App() {
               <p className="section-kicker">From the organizers</p>
               <h2 id="updates-title">Reunion <em>updates.</em></h2>
             </div>
-            <p>Only organizer-approved public information appears here. Private alumni details will require verified access in a later release.</p>
+            <p>Only organizer-approved public information appears here. Private alumni details require a verified invitation and signed-in access.</p>
           </div>
           <div className="announcement-list">
             {ANNOUNCEMENTS.map((announcement) => (
@@ -159,6 +160,8 @@ function App() {
           </div>
         </section>
 
+        <MemberPortal />
+
         <section className="section contact" id="contact" aria-labelledby="contact-title">
           <div>
             <p className="section-kicker">Stay in the circle</p>
@@ -167,7 +170,7 @@ function App() {
           <div className="contact__content">
             <p>Know a classmate we may have missed? Want to represent your department or join a committee? Write to the organizing team.</p>
             <a className="contact__email" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL} <span aria-hidden="true">↗</span></a>
-            <p className="contact__note">Please do not send sensitive personal or family information by email. Secure profile and RSVP collection will open in Phase 2.</p>
+            <p className="contact__note">Please do not send sensitive personal or family information by email. The invitation-only member portal is the secure place for profile and RSVP details.</p>
           </div>
         </section>
 
@@ -178,8 +181,8 @@ function App() {
           </div>
           <div className="privacy__copy">
             <p>This public site contains event information only. It does not publish alumni contact details, family information, biographies, or photographs.</p>
-            <p>When secure registration opens, personal information will be collected only for reunion operations and approved commemorative uses. Publication choices for biographies and photographs will remain separate and off by default.</p>
-            <p className="privacy__status">Provisional notice · Full privacy and consent terms will be published before member registration opens.</p>
+            <p>The invitation-only portal collects personal information only for reunion operations and approved commemorative uses. Publication choices remain separate and off by default.</p>
+            <p className="privacy__status">Provisional notice · Pilot access remains closed until the organizing team approves its first invited members.</p>
           </div>
         </section>
       </main>
@@ -193,6 +196,7 @@ function App() {
         <nav aria-label="Footer navigation">
           <a href="#updates">Updates</a>
           <a href="#privacy">Privacy</a>
+          <a href="#member-portal">Member portal</a>
           <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
         </nav>
       </footer>

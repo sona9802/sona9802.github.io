@@ -2,7 +2,7 @@
 
 **Project:** SCT 1998–2002 Silver Jubilee Reunion Portal  
 **Last updated:** October 8, 2026  
-**Current phase:** Phase 1 complete; Phase 1B presentation portal is next
+**Current phase:** Phase 2 implemented; invitation pilot remains disabled pending organizer approval
 **Production site:** <https://sona9802.github.io/>  
 **Repository:** <https://github.com/sona9802/sona9802.github.io>
 
@@ -22,16 +22,16 @@ This document tracks delivered work against the reunion portal product requireme
 | Project foundation | ✅ | React, TypeScript, Vite, linting, tests, and production builds are configured. |
 | Hosting and delivery | ✅ | Public organization site, CI, and GitHub Pages deployment are operational. |
 | Public landing page | ✅ | Phase 1 public content, program, committees, contact, privacy notice, announcements, and calls to action are implemented. |
-| Backend foundation | 🟡 | Supabase cloud project and initial public-settings schema exist; application integration is not implemented. |
-| Authentication and onboarding | ⬜ | No sign-in, invitations, verification, or account-to-alumni association. |
-| Alumni directory and profiles | ⬜ | No member schema or user interface. |
-| RSVP and family attendance | ⬜ | No RSVP schema, forms, or reporting. |
-| Departments and representatives | ⬜ | No department schema, assignments, or coverage report. |
+| Backend foundation | ✅ | Phase 2 cloud schema, audited RPCs, least-privilege grants, Row Level Security, and policy tests are implemented. |
+| Authentication and onboarding | ✅ | Passwordless sign-in, single-use invitations, email matching, profile activation, verification review, and pilot flag are implemented. |
+| Alumni directory and profiles | 🟡 | Private self-profile editing and scoped organizer access are implemented; member search/directory browsing is deferred. |
+| RSVP and family attendance | ✅ | Private RSVP, family counts, logistics needs, and role-scoped totals are implemented. |
+| Departments and representatives | 🟡 | Department reference data, representative assignments, scoped access, and departmental totals exist; coverage tracking is deferred. |
 | Committees and tasks | ⬜ | No committee, membership, task, dependency, or progress features. |
-| Organizer dashboard | ⬜ | No authenticated dashboard or operational summaries. |
+| Organizer dashboard | 🟡 | Role-scoped RSVP summary, invitation creation, and profile review are implemented; broader operations remain later-phase work. |
 | Announcements | 🟡 | Static public announcements are implemented; managed publishing remains for a later phase. |
 | Biography and photograph workflow | ⬜ | No biography, storage, moderation, consent, or editorial workflow. |
-| Administration and audit | ⬜ | No administrative screens, role management, exports, or audit log. |
+| Administration and audit | 🟡 | Audited invitation, verification, role, and representative operations exist; exports and full role-management UI are deferred. |
 
 ## Implemented and verified
 
@@ -92,6 +92,23 @@ This document tracks delivered work against the reunion portal product requireme
 - ✅ Local seed data contains only a synthetic environment label.
 - 🟡 The frontend currently uses local event constants and does not read settings from Supabase.
 
+### Phase 2 secure member portal
+
+- ✅ Eight-table Phase 2 schema: departments, invitations, profiles, roles, RSVPs, consents, department representatives, and audit events.
+- ✅ Passwordless email-link sign-in client with persistent sessions.
+- ✅ Single-use, expiration-bound invitation tokens stored only as SHA-256 hashes.
+- ✅ Invitation email must match the authenticated email before a profile can be created.
+- ✅ Every accepted invitation creates five separate publication choices, all off by default.
+- ✅ Members can edit only approved self-profile columns and their own RSVP and consent choices.
+- ✅ RSVP covers attendance, dates, spouse/partner, children, dietary and accessibility notes, accommodation, transport, and optional activities.
+- ✅ Department representatives can see only active member/RSVP records in assigned departments.
+- ✅ Administrators can create invitations, review pending profiles, and see reunion-wide RSVP totals.
+- ✅ Sensitive administrative actions write append-only audit events without private field values.
+- ✅ Suspended profiles cannot use member data policies.
+- ✅ Twenty-four pgTAP assertions verify table presence, policies, anonymous denial, member isolation, department scope, suspension, invitation acceptance, default-off consent, auditing, and totals.
+- ✅ Cloud migration `202610080001_phase2_members_rsvp.sql` applied with no alumni seed data.
+- ✅ Production UI is feature-flagged closed until organizers authorize pilot members and configure the browser-safe deployment variables.
+
 ### Documentation and operations
 
 - ✅ Product requirements document exists outside the application repository.
@@ -107,35 +124,35 @@ This document tracks delivered work against the reunion portal product requireme
 
 ### Authentication and onboarding
 
-- ⬜ Supabase Auth client integration.
-- ⬜ Email magic-link or email/password sign-in.
-- ⬜ Invitation and alumni verification workflow.
-- ⬜ Duplicate-profile prevention.
-- ⬜ Role-restricted access to private data.
+- ✅ Supabase Auth client integration.
+- ✅ Email magic-link sign-in.
+- ✅ Invitation and alumni verification workflow.
+- ✅ Duplicate-profile prevention through authenticated-user primary keys and one pending invitation per email.
+- ✅ Role-restricted access to private data.
 
 ### Alumni directory and profiles
 
-- ⬜ Alumni/member database schema.
-- ⬜ Profile create, view, and edit screens.
-- ⬜ Branch and location fields.
-- ⬜ Contact-visibility preferences.
-- ⬜ Volunteer and preferred-committee fields.
+- ✅ Alumni/member database schema.
+- ✅ Invitation-created profile view and edit screen.
+- ✅ Department and location fields.
+- ✅ Contact-visibility preferences.
+- 🟡 Volunteer preference is implemented; preferred-committee selection is deferred.
 - ⬜ Private alumni directory and search.
 
 ### RSVP and family attendance
 
-- ⬜ RSVP database schema and Row Level Security policies.
-- ⬜ Attendance-status form.
-- ⬜ Spouse, children, and age-band capture.
-- ⬜ Arrival, departure, dietary, accessibility, accommodation, transport, and activity fields.
-- ⬜ Organizer-only notes.
-- ⬜ Attendance totals and reporting.
+- ✅ RSVP database schema and Row Level Security policies.
+- ✅ Attendance-status form.
+- 🟡 Spouse and children counts are implemented; age-band UI is deferred.
+- ✅ Arrival, departure, dietary, accessibility, accommodation, transport, and activity fields.
+- 🟡 Organizer-only notes exist in the schema; editing UI is deferred.
+- ✅ Role-scoped attendance totals and reporting.
 
 ### Departments and representatives
 
-- ⬜ Department database schema and management screens.
-- ⬜ Department representative assignments.
-- ⬜ India-based representative indicator.
+- ✅ Department database schema and seeded reference data.
+- ✅ Audited department representative assignment function and scoped access.
+- ✅ India-based representative indicator in the schema and assignment function.
 - ⬜ Contact-attempt tracking.
 - ⬜ Department coverage report.
 
@@ -150,11 +167,11 @@ This document tracks delivered work against the reunion portal product requireme
 
 ### Organizer features
 
-- ⬜ Organizer dashboard.
+- 🟡 RSVP summary, invitation creation, and profile review dashboard.
 - ⬜ Managed announcements.
 - ⬜ Cross-committee summaries.
-- ⬜ Administrative correction workflows.
-- ⬜ Audit trail for important changes.
+- ✅ Audited profile-verification workflow.
+- ✅ Audit trail for invitation, verification, role, and representative changes.
 - ⬜ Authorized data exports.
 
 ### Biography, photographs, and consent
@@ -182,8 +199,11 @@ Verified on October 8, 2026:
 | Check | Result |
 |---|---|
 | `npm run lint` | ✅ Passed |
-| `npm test` | ✅ Passed: 6 tests |
+| `npm test` | ✅ Passed: 8 tests |
+| `npm run test:db` | ✅ Passed: 24 pgTAP assertions |
 | `npm run build` | ✅ Passed |
+| Phase 2 local visual review | ✅ Desktop layout and member-portal navigation verified |
+| Phase 2 cloud migration | ✅ Applied; no seed records pushed |
 | GitHub continuous integration | ✅ Passed |
 | GitHub Pages deployment | ✅ Passed |
 | Production homepage | ✅ HTTPS 200 |
@@ -193,14 +213,14 @@ Verified on October 8, 2026:
 
 ## Recommended next implementation slice
 
-Implement Phase 1B as a clearly labeled, synthetic presentation experience:
+Open the Phase 2 pilot safely:
 
-1. Add responsive navigation for the planned portal modules.
-2. Build clickable demo screens for directory, RSVP, departments, committees, tasks, dashboard, biographies, memories, program, and administration.
-3. Use synthetic data only and label every simulated workflow as demo behavior.
-4. Add happy-path demonstrations for volunteering, accepting a task, biography/photo submission, review, and book readiness.
-5. Add loading, empty, error, and mobile states without implying personal information was saved.
-6. Keep the Phase 1 public site available as the rollback target.
+1. Approve one or more real pilot alumni email addresses.
+2. Configure the production Supabase URL, browser-safe publishable key, and exact auth redirect URL.
+3. Bootstrap the first technical administrator through an operator-reviewed one-time invitation.
+4. Enable `VITE_PHASE2_ENABLED` for the pilot deployment.
+5. Test magic-link delivery, invitation acceptance, profile review, RSVP updates, consent withdrawal, and department scoping with designated accounts.
+6. Keep the public Phase 1 experience as the immediate rollback while the pilot is evaluated.
 
 ## Update procedure
 

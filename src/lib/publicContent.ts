@@ -3,8 +3,8 @@ export const ANNOUNCEMENTS = [
     date: '2026-10-08',
     displayDate: 'October 8, 2026',
     label: 'Portal update',
-    title: 'Our public reunion home is live',
-    body: 'This site is now the official place for confirmed reunion information. Member registration and RSVP will open in a later phase.',
+    title: 'The member portal is ready for pilot review',
+    body: 'Secure invitation activation, private profiles, privacy choices, and family RSVP are built. Access remains closed until organizers approve the first pilot members.',
   },
   {
     date: '2026-10-07',
