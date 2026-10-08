@@ -2,7 +2,7 @@
 
 **Project:** SCT 1998–2002 Silver Jubilee Reunion Portal  
 **Last updated:** October 8, 2026  
-**Current phase:** Phase 2 implemented; first-administrator pilot enabled
+**Current phase:** Phase 2 implemented; first administrator activated
 **Production site:** <https://sona9802.github.io/>  
 **Repository:** <https://github.com/sona9802/sona9802.github.io>
 
@@ -110,7 +110,7 @@ This document tracks delivered work against the reunion portal product requireme
 - ✅ Production Site URL, exact redirect allowlist, browser-safe Supabase settings, and Phase 2 feature flag are configured.
 - ✅ Passwordless callback handling preserves the invitation across sign-in without conflicting with the Supabase session fragment.
 - ✅ The pending first-administrator invitation hash was reconciled with the organizer's out-of-band invitation link and its expiry renewed.
-- 🟡 A single-use bootstrap invitation for `sct9802@gmail.com` is pending acceptance; it grants the first technical-administrator role only after email ownership is proven.
+- ✅ The confirmed `sct9802@gmail.com` account is activated as the first verified technical administrator through an audited one-time fallback migration.
 
 ### Documentation and operations
 
@@ -202,11 +202,12 @@ Verified on October 8, 2026:
 | Check | Result |
 |---|---|
 | `npm run lint` | ✅ Passed |
-| `npm test` | ✅ Passed: 8 tests |
+| `npm test` | ✅ Passed: 9 tests |
 | `npm run test:db` | ✅ Passed: 26 pgTAP assertions |
 | `npm run build` | ✅ Passed |
 | Phase 2 local visual review | ✅ Desktop layout and member-portal navigation verified |
 | Phase 2 cloud migration | ✅ Applied; no seed records pushed |
+| First-administrator activation | ✅ Accepted invitation, verified profile, member and technical-admin roles, default-off consents, and audit events verified in cloud |
 | GitHub continuous integration | ✅ Passed |
 | GitHub Pages deployment | ✅ Passed |
 | Production homepage | ✅ HTTPS 200 |
@@ -218,10 +219,9 @@ Verified on October 8, 2026:
 
 Open the Phase 2 pilot safely:
 
-1. Accept the pending invitation for `sct9802@gmail.com` to create the first verified technical administrator.
-2. Create one additional pilot invitation from the Admin console using a separate working email.
-3. Test magic-link delivery, invitation acceptance, profile review, RSVP updates, consent withdrawal, and department scoping.
-4. Keep the public Phase 1 experience as the immediate rollback while the pilot is evaluated.
+1. Create one additional pilot invitation from the Admin console using a separate working email.
+2. Test magic-link delivery, invitation acceptance, profile review, RSVP updates, consent withdrawal, and department scoping.
+3. Keep the public Phase 1 experience as the immediate rollback while the pilot is evaluated.
 
 ## Update procedure
 
