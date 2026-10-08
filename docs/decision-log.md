@@ -6,3 +6,5 @@
 | 2026-10-07 | Use public GitHub Pages and one Supabase Free project. | Ashok Loganathan | Free-tier usage reaches 70% |
 | 2026-10-07 | Use synthetic data through the presentation release. | Ashok Loganathan | Phase 2 security gate passes |
 | 2026-10-07 | No paid infrastructure, domain, monitoring, bulk email, or payment processing initially. | Ashok Loganathan | Measured need and organizer approval |
+| 2026-10-08 | Provision the cloud database in South Asia (Mumbai), project reference `bjoimszikocvkxjgieuc`, to favor the reunion's India-based audience. | Ashok Loganathan | Audience distribution materially changes |
+| 2026-10-08 | Publish the portal as the `Sona98` GitHub account site at `https://sona98.github.io/`. | Ashok Loganathan | The portal moves to a custom domain or another hosting platform |

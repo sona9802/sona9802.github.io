@@ -10,10 +10,14 @@
 
 ## GitHub Pages
 
-Merges and pushes to `main` trigger both validation and Pages deployment. The workflow builds with `/sct-98-02-reunion/` as the base path and publishes the `dist` artifact.
+Merges and pushes to `main` trigger both validation and Pages deployment. The workflow builds with `/` as the base path for the `Sona98` account site and publishes the `dist` artifact.
 
 After deployment, verify HTTPS, the page title, event dates, mobile layout, and browser console.
 
 ## Secrets
 
 Only browser-safe Supabase URL and anonymous-key values may be exposed to Vite. Never place a service-role key in a `VITE_` variable.
+
+The cloud database password is stored in the macOS Keychain under service `sct-98-02-reunion-supabase-db` and account `AshokLogan`. It must not be copied into the repository or a shell-history command.
+
+The linked cloud project is `bjoimszikocvkxjgieuc` in South Asia (Mumbai). Deploy reviewed migrations with `npx supabase db push`; do not make untracked production schema changes in the dashboard.
