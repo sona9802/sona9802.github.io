@@ -108,6 +108,8 @@ This document tracks delivered work against the reunion portal product requireme
 - ✅ Twenty-six pgTAP assertions verify table presence, policies, anonymous denial, member isolation, department scope, suspension, invitation acceptance, default-off consent, first-admin bootstrap, auditing, and totals.
 - ✅ Cloud migration `202610080001_phase2_members_rsvp.sql` applied with no alumni seed data.
 - ✅ Production Site URL, exact redirect allowlist, browser-safe Supabase settings, and Phase 2 feature flag are configured.
+- ✅ Passwordless callback handling preserves the invitation across sign-in without conflicting with the Supabase session fragment.
+- ✅ The pending first-administrator invitation hash was reconciled with the organizer's out-of-band invitation link and its expiry renewed.
 - 🟡 A single-use bootstrap invitation for `sct9802@gmail.com` is pending acceptance; it grants the first technical-administrator role only after email ownership is proven.
 
 ### Documentation and operations
