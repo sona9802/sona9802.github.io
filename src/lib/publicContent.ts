@@ -1,10 +1,10 @@
 export const ANNOUNCEMENTS = [
   {
     date: '2026-10-08',
-    displayDate: 'October 8, 2026',
+    displayDate: 'October 12, 2026',
     label: 'Portal update',
-    title: 'The member portal is ready for pilot review',
-    body: 'Secure invitation activation, private profiles, privacy choices, and family RSVP are built. Access remains closed until organizers approve the first pilot members.',
+    title: 'The complete reunion workspace is live',
+    body: 'Invitation-only profiles, RSVP, privacy choices, committees, editorial tools, event operations, and governance are now available to authorized members.',
   },
   {
     date: '2026-10-07',

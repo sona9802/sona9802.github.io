@@ -72,7 +72,7 @@ Verified locally on October 11, 2026:
 | Empty-database migration rebuild | ✅ Migrations 001–007 applied successfully |
 | `npm run lint` | ✅ Passed |
 | `npm test -- --run` | ✅ Passed: 9 frontend tests |
-| `npm run test:db` | ✅ Passed: 66 pgTAP assertions |
+| `npm run test:db` | ✅ Passed: 70 pgTAP assertions, including authenticated task-policy runtime checks |
 | Production-enabled `npm run build` | ✅ Passed with authenticated workspace code-split from the public bundle |
 | Phase 3–7 database schema test | ✅ Tables, RPCs, buckets, committees, and retention seeds covered |
 | Responsive workspace UI | ✅ Member, organizer, editorial, event, service, finance, and governance consoles implemented |
@@ -86,6 +86,7 @@ Production deployment and verification completed on October 12, 2026.
 - ✅ Seven committees and five retention-policy categories verified in production.
 - ✅ All four required storage buckets verified in production.
 - ✅ `sct9802@gmail.com` remains active with `member` and `technical_admin` roles.
+- ✅ Corrective migration `202610120001` removes task-policy recursion and is verified in the signed-in production workspace.
 
 ### Production frontend deployment
 
@@ -95,6 +96,7 @@ Production deployment and verification completed on October 12, 2026.
 - ✅ Live HTML, stylesheet, public JavaScript, and lazy-loaded private-workspace asset return successfully over HTTPS.
 - ✅ Live public copy identifies the complete invitation-only workspace as available.
 - ✅ Live private-workspace asset contains the directory, organizer, editorial export, event operations, outreach, and governance consoles.
+- ✅ Signed-in administrator QA confirms all consoles and task queries load without policy errors.
 
 ## Intentionally excluded
 
