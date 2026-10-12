@@ -1,6 +1,7 @@
 import { EVENT, getDaysUntilEvent } from './lib/event'
 import { ANNOUNCEMENTS, COMMITTEES, CONTACT_EMAIL, PROGRAM } from './lib/publicContent'
 import { MemberPortal } from './components/MemberPortal'
+import { PublicLiveContent } from './components/PublicLiveContent'
 
 const emailHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('SCT 1998–2002 reunion volunteer interest')}`
 
@@ -61,8 +62,8 @@ function App() {
 
         <section className="notice" aria-label="Latest announcement">
           <span className="notice__label">Now live</span>
-          <p><strong>The secure member portal is ready.</strong> Invitation-only pilot access opens after organizer approval.</p>
-          <a href="#member-portal">Portal status <span aria-hidden="true">→</span></a>
+          <p><strong>The complete reunion workspace is live.</strong> Members join through a secure, single-use invitation from an authorized organizer.</p>
+          <a href="#member-portal">Member sign-in <span aria-hidden="true">→</span></a>
         </section>
 
         <section className="section reunion" id="reunion" aria-labelledby="reunion-title">
@@ -160,6 +161,8 @@ function App() {
           </div>
         </section>
 
+        <PublicLiveContent />
+
         <MemberPortal />
 
         <section className="section contact" id="contact" aria-labelledby="contact-title">
@@ -182,7 +185,7 @@ function App() {
           <div className="privacy__copy">
             <p>This public site contains event information only. It does not publish alumni contact details, family information, biographies, or photographs.</p>
             <p>The invitation-only portal collects personal information only for reunion operations and approved commemorative uses. Publication choices remain separate and off by default.</p>
-            <p className="privacy__status">Provisional notice · Pilot access remains closed until the organizing team approves its first invited members.</p>
+            <p className="privacy__status">Access is invitation-only · Directory, editorial, event, and publication permissions are enforced separately.</p>
           </div>
         </section>
       </main>

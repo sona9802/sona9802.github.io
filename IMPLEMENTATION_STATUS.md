@@ -1,234 +1,105 @@
 # Implementation Status
 
-**Project:** SCT 1998–2002 Silver Jubilee Reunion Portal  
-**Last updated:** October 8, 2026  
-**Current phase:** Phase 2 implemented; first administrator activated
-**Production site:** <https://sona9802.github.io/>  
+**Project:** SCT 1998–2002 Silver Jubilee Reunion Portal
+
+**Last updated:** October 11, 2026
+
+**Current release:** Phases 0–7 implemented
+
+**Production site:** <https://sona9802.github.io/>
+
 **Repository:** <https://github.com/sona9802/sona9802.github.io>
 
-This document tracks delivered work against the reunion portal product requirements. Update it whenever a feature is completed, materially changed, or verified in production.
+This file tracks delivered work against the reunion portal requirements. No private alumni data, credentials, photographs, invitation tokens, or exports belong in this repository.
 
-## Status legend
+## Overall status
 
-- ✅ Implemented and verified
-- 🟡 Partially implemented or foundation only
-- ⬜ Not started
-- ⏸ Deferred to a later release
-
-## Overall progress
-
-| Area | Status | Notes |
+| Phase | Status | Delivered scope |
 |---|---|---|
-| Project foundation | ✅ | React, TypeScript, Vite, linting, tests, and production builds are configured. |
-| Hosting and delivery | ✅ | Public organization site, CI, and GitHub Pages deployment are operational. |
-| Public landing page | ✅ | Phase 1 public content, program, committees, contact, privacy notice, announcements, and calls to action are implemented. |
-| Backend foundation | ✅ | Phase 2 cloud schema, audited RPCs, least-privilege grants, Row Level Security, and policy tests are implemented. |
-| Authentication and onboarding | ✅ | Passwordless sign-in, single-use invitations, email matching, profile activation, verification review, and pilot flag are implemented. |
-| Alumni directory and profiles | 🟡 | Private self-profile editing and scoped organizer access are implemented; member search/directory browsing is deferred. |
-| RSVP and family attendance | ✅ | Private RSVP, family counts, logistics needs, and role-scoped totals are implemented. |
-| Departments and representatives | 🟡 | Department reference data, representative assignments, scoped access, and departmental totals exist; coverage tracking is deferred. |
-| Committees and tasks | ⬜ | No committee, membership, task, dependency, or progress features. |
-| Organizer dashboard | 🟡 | Role-scoped RSVP summary, invitation creation, and profile review are implemented; broader operations remain later-phase work. |
-| Announcements | 🟡 | Static public announcements are implemented; managed publishing remains for a later phase. |
-| Biography and photograph workflow | ⬜ | No biography, storage, moderation, consent, or editorial workflow. |
-| Administration and audit | 🟡 | Audited invitation, verification, role, and representative operations exist; exports and full role-management UI are deferred. |
+| Phase 0 — foundation | ✅ Implemented | Architecture, privacy baseline, CI, runbooks, decision log, Supabase project, and repository controls. |
+| Phase 1 — public site | ✅ Implemented | Reunion identity, dates, venue, program, committees, announcements, contact, privacy notice, responsive and accessible presentation. |
+| Phase 2 — secure member MVP | ✅ Implemented | Passwordless invitation onboarding, profiles, verification, roles, RSVP/family logistics, separate consent decisions, admin console, RLS, and audit trail. |
+| Phase 3 — organizing workspace | ✅ Implemented | Searchable consent-aware directory, department outreach and coverage, seven committee workspaces, role assignment, tasks, comments, dependencies, announcements, notifications, and organizer dashboard. |
+| Phase 4 — biographies and media | ✅ Implemented | Biography drafting/submission/editorial approval, member approval/withdrawal, private image upload, signed preview, moderation, separated publication decisions, and storage policies. |
+| Phase 5 — editorial production | ✅ Implemented | Editor queues, immutable originals, versioned review, consent-filtered book manifest, approved-asset metadata, and time-limited audited export records. |
+| Phase 6 — event operations | ✅ Implemented | Faculty/staff tracking, detailed public/member program, volunteer shifts and assignment notifications, emergency/vendor contacts, approved finance summaries, mobile-friendly check-in, and live event dashboard. |
+| Phase 7 — archive and governance | ✅ Implemented | Feedback and privacy-request queues, audit browser, retention rules, archive feature flag, post-event deletion categories, and consent-preserving publication controls. |
 
-## Implemented and verified
+## Security and privacy controls
 
-### Application foundation
-
-- ✅ React 19 single-page application written in TypeScript.
-- ✅ Vite development and production build configuration.
-- ✅ ESLint validation.
-- ✅ Vitest test runner.
-- ✅ Responsive base styling for desktop and mobile layouts.
-- ✅ Reduced-motion accessibility rule.
-- ✅ Root-path production build for the organization Pages site.
-
-### Public landing page
-
-- ✅ Reunion and college identity.
-- ✅ 1998–2002 batch and Silver Jubilee messaging.
-- ✅ Confirmed dates: July 16–18, 2027.
-- ✅ Venue: Sona College of Technology, Salem, Tamil Nadu.
-- ✅ Dynamic days-until-event countdown.
-- ✅ High-level Reconnect, Celebrate, and Contribute objectives.
-- ✅ High-level program covering all three reunion days.
-- ✅ Introductions to all seven working committees.
-- ✅ Static organizer-approved announcements.
-- ✅ Volunteer and contact calls to action using the public organizer email.
-- ✅ Provisional privacy notice and warning not to email sensitive information.
-- ✅ Metadata for search and social sharing.
-- ✅ Semantic landmarks, heading hierarchy, skip link, visible focus styles, and reduced-motion handling.
-- ✅ Responsive layout.
-- ✅ Phase 1 public-foundation acceptance criteria are implemented without collecting private data.
-
-### Event logic and tests
-
-- ✅ Event date and venue constants are centralized in `src/lib/event.ts`.
-- ✅ Countdown calculation is tested before and after the event date.
-- ✅ Six automated tests pass across event logic and public content integrity.
-
-### GitHub and deployment
-
-- ✅ `sona9802` GitHub organization created.
-- ✅ Public `sona9802/sona9802.github.io` repository created.
-- ✅ GitHub Actions continuous integration runs lint, tests, and production build on pushes and pull requests.
-- ✅ GitHub Pages workflow builds and deploys the Vite `dist` artifact from `main`.
-- ✅ Live site responds over HTTPS.
-- ✅ Production HTML, JavaScript, and CSS assets return successful responses.
-- ✅ Previous `AshokLogan/sct-98-02-reunion` repository remains configured locally as the `legacy` remote.
-
-### Supabase foundation
-
-- ✅ Supabase CLI configuration is present.
-- ✅ Supabase Free cloud project created in South Asia (Mumbai).
-- ✅ Cloud project reference: `bjoimszikocvkxjgieuc`.
-- ✅ Reproducible initial migration exists.
-- ✅ `app_settings` table created for non-sensitive configuration.
-- ✅ Row Level Security is enabled on `app_settings`.
-- ✅ Public-read policy is limited to rows where `is_public = true`.
-- ✅ Event dates and venue are represented as public settings.
-- ✅ Local seed data contains only a synthetic environment label.
-- 🟡 The frontend currently uses local event constants and does not read settings from Supabase.
-
-### Phase 2 secure member portal
-
-- ✅ Eight-table Phase 2 schema: departments, invitations, profiles, roles, RSVPs, consents, department representatives, and audit events.
-- ✅ Passwordless email-link sign-in client with persistent sessions.
+- ✅ Supabase Auth passwordless email sign-in with exact invitation-email matching.
 - ✅ Single-use, expiration-bound invitation tokens stored only as SHA-256 hashes.
-- ✅ Invitation email must match the authenticated email before a profile can be created.
-- ✅ Every accepted invitation creates five separate publication choices, all off by default.
-- ✅ Members can edit only approved self-profile columns and their own RSVP and consent choices.
-- ✅ RSVP covers attendance, dates, spouse/partner, children, dietary and accessibility notes, accommodation, transport, and optional activities.
-- ✅ Department representatives can see only active member/RSVP records in assigned departments.
-- ✅ Administrators can create invitations, review pending profiles, and see reunion-wide RSVP totals.
-- ✅ Sensitive administrative actions write append-only audit events without private field values.
-- ✅ Suspended profiles cannot use member data policies.
-- ✅ Twenty-six pgTAP assertions verify table presence, policies, anonymous denial, member isolation, department scope, suspension, invitation acceptance, default-off consent, first-admin bootstrap, auditing, and totals.
-- ✅ Cloud migration `202610080001_phase2_members_rsvp.sql` applied with no alumni seed data.
-- ✅ Production Site URL, exact redirect allowlist, browser-safe Supabase settings, and Phase 2 feature flag are configured.
-- ✅ Passwordless callback handling preserves the invitation across sign-in without conflicting with the Supabase session fragment.
-- ✅ The pending first-administrator invitation hash was reconciled with the organizer's out-of-band invitation link and its expiry renewed.
-- ✅ The confirmed `sct9802@gmail.com` account is activated as the first verified technical administrator through an audited one-time fallback migration.
+- ✅ First verified technical administrator: `sct9802@gmail.com`.
+- ✅ Least-privilege roles: member, department representative, committee lead, invitation manager, editor, event operator, finance, auditor, administrator, and technical administrator.
+- ✅ Row Level Security on every private application table and storage bucket.
+- ✅ Separate opt-in decisions for directory, biography, profile photograph, reunion photograph, and contact sharing; all default off.
+- ✅ Role-safe label RPCs prevent editors and event operators from receiving unrelated private profile fields.
+- ✅ Public gallery manifests accept only moderated, consented objects already moved into the public-gallery bucket.
+- ✅ Administrative actions and exports are audited without recording invitation tokens or private field contents.
+- ✅ Suspended accounts lose member-data access.
+- ✅ Operational, RSVP, family, contact, editorial, and media data remain private by default.
 
-### Documentation and operations
+## Member and organizer capabilities
 
-- ✅ Product requirements document exists outside the application repository.
-- ✅ Platform architecture decision is documented.
-- ✅ Initial privacy baseline is documented.
-- ✅ Deployment, rollback, and incident-response runbooks exist.
-- ✅ Decision log exists.
-- ✅ Phase 0 completion record exists.
-- ✅ Phase 1 completion record exists.
-- ✅ Repository guidance prohibits committing private alumni data, photographs, exports, and service-role credentials.
+- ✅ Members can update their own profile, RSVP, family counts, logistics needs, consent, biography, photographs, feedback, and data requests.
+- ✅ Members can search only directory-visible classmates and see only work relevant to their roles or committees.
+- ✅ Invitation managers can create single-use invitation links without receiving general administrator access.
+- ✅ Department representatives can manage only their assigned department outreach and see scoped coverage.
+- ✅ Committee leads can create and maintain committee work, owners, priorities, dates, comments, and progress.
+- ✅ Editors can review submitted biographies and photographs without access to unrelated contact details.
+- ✅ Event operators can manage faculty/staff, program items, shifts, volunteer assignments, check-in, and operational contacts.
+- ✅ Finance roles see only summaries explicitly approved for portal display.
+- ✅ Auditors and administrators can inspect append-only administrative history and retention policy.
+- ✅ Administrators can manage roles, committees, departments, verification, service queues, contacts, and approved summaries.
 
-## MVP feature status
+## Database and storage inventory
 
-### Authentication and onboarding
+The implementation contains 30 application tables across the foundation and Phases 2–7, including profiles, invitations, roles, RSVPs, consent, committees, tasks, announcements, biographies, media, notifications, event operations, feedback, data requests, and retention policy.
 
-- ✅ Supabase Auth client integration.
-- ✅ Email magic-link sign-in.
-- ✅ Invitation and alumni verification workflow.
-- ✅ Duplicate-profile prevention through authenticated-user primary keys and one pending invitation per email.
-- ✅ Role-restricted access to private data.
+Four storage buckets are configured:
 
-### Alumni directory and profiles
+- `profile-photos-private` — private, 1 MB object limit.
+- `reunion-photos-private` — private, 2 MB object limit.
+- `book-assets-approved` — private production assets.
+- `public-gallery` — separately approved publication copies only.
 
-- ✅ Alumni/member database schema.
-- ✅ Invitation-created profile view and edit screen.
-- ✅ Department and location fields.
-- ✅ Contact-visibility preferences.
-- 🟡 Volunteer preference is implemented; preferred-committee selection is deferred.
-- ⬜ Private alumni directory and search.
+## Verification
 
-### RSVP and family attendance
-
-- ✅ RSVP database schema and Row Level Security policies.
-- ✅ Attendance-status form.
-- 🟡 Spouse and children counts are implemented; age-band UI is deferred.
-- ✅ Arrival, departure, dietary, accessibility, accommodation, transport, and activity fields.
-- 🟡 Organizer-only notes exist in the schema; editing UI is deferred.
-- ✅ Role-scoped attendance totals and reporting.
-
-### Departments and representatives
-
-- ✅ Department database schema and seeded reference data.
-- ✅ Audited department representative assignment function and scoped access.
-- ✅ India-based representative indicator in the schema and assignment function.
-- ⬜ Contact-attempt tracking.
-- ⬜ Department coverage report.
-
-### Committees and task management
-
-- ⬜ Committee and membership schemas.
-- ⬜ Lead, deputy, coordinator, and member roles.
-- ⬜ Committee directory and roster screens.
-- ⬜ Task creation, ownership, priority, due date, status, and dependencies.
-- ⬜ Task comments and progress updates.
-- ⬜ Overdue, blocked, and unassigned task reporting.
-
-### Organizer features
-
-- 🟡 RSVP summary, invitation creation, and profile review dashboard.
-- ⬜ Managed announcements.
-- ⬜ Cross-committee summaries.
-- ✅ Audited profile-verification workflow.
-- ✅ Audit trail for invitation, verification, role, and representative changes.
-- ⬜ Authorized data exports.
-
-### Biography, photographs, and consent
-
-- ⬜ Biography draft and editing workflow.
-- ⬜ Profile photograph upload.
-- ⬜ Supabase Storage configuration and policies.
-- ⬜ Biography-publication consent.
-- ⬜ Photograph-publication consent.
-- ⬜ Moderation and editorial review.
-
-## Deferred scope
-
-- ⏸ Multiple photographs and detailed memory metadata — Release 1.1.
-- ⏸ Editorial revision and member approval workflow — Release 1.1.
-- ⏸ Faculty/staff tracking, volunteer shifts, and on-site check-in — Release 1.2.
-- ⏸ Emergency/vendor directory and optional budget summary — Release 1.2.
-- ⏸ Public gallery, event archive, book export, and retention/deletion workflow — post-event.
-- ⏸ Payment processing, accounting, vendor contracts, direct messaging, and public social-network features — not part of the initial release.
-
-## Latest verification
-
-Verified on October 8, 2026:
+Verified locally on October 11, 2026:
 
 | Check | Result |
 |---|---|
+| Empty-database migration rebuild | ✅ Migrations 001–007 applied successfully |
 | `npm run lint` | ✅ Passed |
-| `npm test` | ✅ Passed: 9 tests |
-| `npm run test:db` | ✅ Passed: 26 pgTAP assertions |
-| `npm run build` | ✅ Passed |
-| Phase 2 local visual review | ✅ Desktop layout and member-portal navigation verified |
-| Phase 2 cloud migration | ✅ Applied; no seed records pushed |
-| First-administrator activation | ✅ Accepted invitation, verified profile, member and technical-admin roles, default-off consents, and audit events verified in cloud |
-| GitHub continuous integration | ✅ Passed |
-| GitHub Pages deployment | ✅ Passed |
-| Production homepage | ✅ HTTPS 200 |
-| Production JavaScript asset | ✅ HTTP 200, JavaScript content type |
-| Production CSS asset | ✅ HTTP 200, CSS content type |
-| Working tree after deployment | ✅ Clean |
+| `npm test -- --run` | ✅ Passed: 9 frontend tests |
+| `npm run test:db` | ✅ Passed: 66 pgTAP assertions |
+| Production-enabled `npm run build` | ✅ Passed with authenticated workspace code-split from the public bundle |
+| Phase 3–7 database schema test | ✅ Tables, RPCs, buckets, committees, and retention seeds covered |
+| Responsive workspace UI | ✅ Member, organizer, editorial, event, service, finance, and governance consoles implemented |
 
-## Recommended next implementation slice
+Production verification is recorded after the migrations and GitHub Pages build are deployed.
 
-Open the Phase 2 pilot safely:
+### Production backend deployment
 
-1. Create one additional pilot invitation from the Admin console using a separate working email.
-2. Test magic-link delivery, invitation acceptance, profile review, RSVP updates, consent withdrawal, and department scoping.
-3. Keep the public Phase 1 experience as the immediate rollback while the pilot is evaluated.
+- ✅ Migrations `202610110001` through `202610110003` applied to Supabase project `bjoimszikocvkxjgieuc`.
+- ✅ Remote migration ledger matches all eight local migrations.
+- ✅ Seven committees and five retention-policy categories verified in production.
+- ✅ All four required storage buckets verified in production.
+- ✅ `sct9802@gmail.com` remains active with `member` and `technical_admin` roles.
+
+## Intentionally excluded
+
+These are outside the approved reunion-portal scope rather than unfinished phases:
+
+- Payment processing or full accounting.
+- Vendor contracts and procurement records.
+- Private direct messaging or a public social network.
+- Automatic publication of private media; publication requires explicit moderation, consent, and a separate public-bucket copy.
+- Automatic destructive retention jobs; reviewed requests and retention rules deliberately require an accountable administrator before deletion.
 
 ## Update procedure
 
-When updating this file:
-
-1. Change an item to ✅ only after implementation and verification.
-2. Record partial foundations as 🟡 rather than complete.
-3. Add new verification evidence to the latest-verification section.
-4. Keep private alumni information, credentials, photographs, and exports out of this repository.
-5. Link material architectural or scope changes in `docs/decision-log.md`.
+1. Mark a capability complete only after implementation and proportionate verification.
+2. Record production deployment evidence separately from local verification.
+3. Never place private member data, service credentials, invitation tokens, media, or exports in this file or repository.
+4. Add material architecture and policy changes to `docs/decision-log.md`.

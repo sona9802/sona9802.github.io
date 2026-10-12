@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { buildAuthRedirectUrl, CONSENT_LABELS, invitationTokenFromLocation, normalizeCount, type ConsentType } from '../lib/phase2'
 import { phase2Enabled, supabase } from '../lib/supabase'
+
+const PortalWorkspace = lazy(() => import('./PortalWorkspace').then((module) => ({ default: module.PortalWorkspace })))
 
 type Profile = {
   id: string
@@ -14,6 +16,8 @@ type Profile = {
   phone_private: string | null
   whatsapp_private: string | null
   professional_field: string | null
+  department_id: string | null
+  directory_summary: string | null
   willing_to_volunteer: boolean
   contact_visibility: 'private' | 'batch'
   verification_status: string
@@ -34,7 +38,7 @@ type Rsvp = {
 
 type Consent = { consent_type: ConsentType; granted: boolean }
 type Role = { role_name: string }
-type AdminProfile = Pick<Profile, 'id' | 'full_name' | 'email_private' | 'verification_status'> & { department_id: string | null }
+type AdminProfile = Pick<Profile, 'id' | 'full_name' | 'preferred_name' | 'email_private' | 'verification_status' | 'department_id'>
 type Department = { id: string; code: string; name: string }
 type Summary = {
   total_profiles: number
@@ -89,13 +93,11 @@ export function MemberPortal() {
       const summaryResult = await supabase.rpc('get_rsvp_summary')
       if (summaryResult.data?.[0]) setSummary(summaryResult.data[0] as Summary)
     }
+    const departmentsResult = await supabase.from('departments').select('id, code, name').eq('active', true).order('name')
+    setDepartments((departmentsResult.data ?? []) as Department[])
     if (loadedRoles.some((role) => ['admin', 'technical_admin'].includes(role))) {
-      const [profilesResult, departmentsResult] = await Promise.all([
-        supabase.from('profiles').select('id, full_name, email_private, verification_status, department_id').order('full_name'),
-        supabase.from('departments').select('id, code, name').eq('active', true).order('name'),
-      ])
+      const profilesResult = await supabase.from('profiles').select('id, full_name, preferred_name, email_private, verification_status, department_id').order('full_name')
       setAdminProfiles((profilesResult.data ?? []) as AdminProfile[])
-      setDepartments((departmentsResult.data ?? []) as Department[])
     }
     setLoading(false)
   }, [])
@@ -173,6 +175,8 @@ export function MemberPortal() {
       country: String(form.get('country') ?? '').trim() || null,
       phone_private: String(form.get('phone_private') ?? '').trim() || null,
       professional_field: String(form.get('professional_field') ?? '').trim() || null,
+      department_id: String(form.get('department_id') ?? '') || null,
+      directory_summary: String(form.get('directory_summary') ?? '').trim() || null,
       willing_to_volunteer: form.get('willing_to_volunteer') === 'on',
       contact_visibility: (form.get('contact_visibility') === 'batch' ? 'batch' : 'private') as Profile['contact_visibility'],
     }
@@ -261,6 +265,7 @@ export function MemberPortal() {
   const storedInvitation = sessionStorage.getItem('reunion-invitation-token') || invitationTokenFromLocation(window.location.search)
   const organizer = roles.some((role) => ['admin', 'technical_admin', 'department_rep'].includes(role))
   const administrator = roles.some((role) => ['admin', 'technical_admin'].includes(role))
+  const canInvite = administrator || roles.includes('invitation_manager')
 
   return (
     <section className="member-portal" id="member-portal" aria-labelledby="portal-title">
@@ -294,7 +299,7 @@ export function MemberPortal() {
           <aside className="portal-sidebar">
             <p className="portal-welcome">Welcome back,<strong>{profile.preferred_name || profile.full_name}</strong></p>
             <span className={`status-pill status-pill--${profile.verification_status}`}>{profile.verification_status}</span>
-            <nav aria-label="Member portal navigation"><a href="#my-profile">Profile</a><a href="#my-rsvp">RSVP</a><a href="#my-consent">Privacy choices</a>{organizer && <a href="#organizer-summary">Organizer summary</a>}{administrator && <a href="#admin-console">Admin console</a>}</nav>
+            <nav aria-label="Member portal navigation"><a href="#my-profile">Profile</a><a href="#my-rsvp">RSVP</a><a href="#my-consent">Privacy choices</a><a href="#member-directory">Directory</a><a href="#committee-workspace">Committees</a><a href="#task-board">Tasks</a><a href="#biography-editor">Biography</a><a href="#media-library">Photos</a>{organizer && <a href="#organizer-dashboard">Organizer dashboard</a>}{canInvite && <a href="#admin-console">Admin console</a>}{administrator && <a href="#access-management">Access</a>}</nav>
           </aside>
           <div className="portal-main">
             <form className="portal-card" id="my-profile" onSubmit={saveProfile}>
@@ -304,10 +309,12 @@ export function MemberPortal() {
                 <label>Email<input value={profile.email_private} disabled /></label>
                 <label>Preferred name<input name="preferred_name" defaultValue={profile.preferred_name ?? ''} /></label>
                 <label>Professional field<input name="professional_field" defaultValue={profile.professional_field ?? ''} /></label>
+                <label>Department<select name="department_id" defaultValue={profile.department_id ?? ''}><option value="">Not assigned</option>{departments.map((department) => <option key={department.id} value={department.id}>{department.code} · {department.name}</option>)}</select></label>
                 <label>City<input name="city" defaultValue={profile.city ?? ''} /></label>
                 <label>State or region<input name="state_region" defaultValue={profile.state_region ?? ''} /></label>
                 <label>Country<input name="country" defaultValue={profile.country ?? ''} /></label>
                 <label>Phone <span>(organizers only)</span><input name="phone_private" type="tel" defaultValue={profile.phone_private ?? ''} /></label>
+                <label className="portal-span">Directory summary <span>(shown only when directory consent is on)</span><textarea name="directory_summary" maxLength={280} defaultValue={profile.directory_summary ?? ''} /></label>
               </div>
               <div className="portal-choices"><label><input name="willing_to_volunteer" type="checkbox" defaultChecked={profile.willing_to_volunteer} /> I am willing to volunteer</label><label>Contact visibility<select name="contact_visibility" defaultValue={profile.contact_visibility}><option value="private">Organizers only</option><option value="batch">Verified batch members</option></select></label></div>
               <button className="portal-button" type="submit">Save profile</button>
@@ -335,7 +342,7 @@ export function MemberPortal() {
 
             {organizer && summary && <section className="portal-card" id="organizer-summary"><header><div><span className="portal-step">Organizer</span><h3>RSVP snapshot</h3></div><p>{roles.includes('department_rep') && !roles.includes('admin') ? 'Your department only' : 'All active profiles'}</p></header><dl className="summary-grid"><div><dt>Profiles</dt><dd>{summary.total_profiles}</dd></div><div><dt>Responses</dt><dd>{summary.responses}</dd></div><div><dt>Alumni attending</dt><dd>{summary.attending_alumni}</dd></div><div><dt>Family attending</dt><dd>{summary.attending_spouses + summary.attending_children}</dd></div><div><dt>Undecided</dt><dd>{summary.undecided}</dd></div><div><dt>Not attending</dt><dd>{summary.not_attending}</dd></div></dl></section>}
 
-            {administrator && <section className="portal-card" id="admin-console">
+            {canInvite && <section className="portal-card" id="admin-console">
               <header><div><span className="portal-step">Administration</span><h3>Invitations & review</h3></div><p>Invitation creation and profile decisions are written to the audit log.</p></header>
               <form className="admin-invite" onSubmit={createInvitation}>
                 <label>Alumni name<input name="full_name" required /></label>
@@ -344,11 +351,15 @@ export function MemberPortal() {
                 <button className="portal-button" type="submit">Create invitation</button>
               </form>
               {invitationLink && <div className="invitation-result"><p>Secure invitation link</p><code>{invitationLink}</code><button className="portal-button portal-button--copy" type="button" onClick={() => void navigator.clipboard.writeText(invitationLink)}>Copy link</button></div>}
-              <div className="review-list">
+              {administrator && <div className="review-list">
                 <div className="review-list__head"><span>Member</span><span>Status</span><span>Review</span></div>
                 {adminProfiles.map((item) => <div className="review-row" key={item.id}><span><strong>{item.full_name}</strong><small>{item.email_private}</small></span><span className={`status-pill status-pill--${item.verification_status}`}>{item.verification_status}</span><span>{item.verification_status === 'pending' ? <><button type="button" onClick={() => void reviewProfile(item.id, 'verified')}>Verify</button><button type="button" onClick={() => void reviewProfile(item.id, 'rejected')}>Reject</button></> : '—'}</span></div>)}
-              </div>
+              </div>}
             </section>}
+
+            <Suspense fallback={<p className="portal-message portal-message--info" role="status">Loading the reunion workspace…</p>}>
+              <PortalWorkspace userId={session.user.id} roles={roles} departments={departments} profiles={adminProfiles} />
+            </Suspense>
           </div>
         </div>
       )}
