@@ -77,7 +77,7 @@ Verified locally on October 11, 2026:
 | Phase 3–7 database schema test | ✅ Tables, RPCs, buckets, committees, and retention seeds covered |
 | Responsive workspace UI | ✅ Member, organizer, editorial, event, service, finance, and governance consoles implemented |
 
-Production verification is recorded after the migrations and GitHub Pages build are deployed.
+Production deployment and verification completed on October 12, 2026.
 
 ### Production backend deployment
 
@@ -86,6 +86,15 @@ Production verification is recorded after the migrations and GitHub Pages build 
 - ✅ Seven committees and five retention-policy categories verified in production.
 - ✅ All four required storage buckets verified in production.
 - ✅ `sct9802@gmail.com` remains active with `member` and `technical_admin` roles.
+
+### Production frontend deployment
+
+- ✅ Commits `76240ff` and `81f1220` pushed to the production `main` branch.
+- ✅ GitHub continuous integration passed lint, frontend tests, and production build.
+- ✅ GitHub Pages build and deployment completed successfully.
+- ✅ Live HTML, stylesheet, public JavaScript, and lazy-loaded private-workspace asset return successfully over HTTPS.
+- ✅ Live public copy identifies the complete invitation-only workspace as available.
+- ✅ Live private-workspace asset contains the directory, organizer, editorial export, event operations, outreach, and governance consoles.
 
 ## Intentionally excluded
 
