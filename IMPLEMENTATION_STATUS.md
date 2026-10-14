@@ -52,6 +52,7 @@ This file tracks delivered work against the reunion portal requirements. No priv
 - ✅ Finance roles see only summaries explicitly approved for portal display.
 - ✅ Auditors and administrators can inspect append-only administrative history and retention policy.
 - ✅ Administrators can manage roles, committees, departments, verification, service queues, contacts, and approved summaries.
+- ✅ Default departments are seeded for IT, CSE, EEE, Mechanical Engineering, ECE, and Staff.
 
 ## Database and storage inventory
 
