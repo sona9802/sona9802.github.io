@@ -148,7 +148,7 @@ export function MemberPortal() {
     setLoading(false)
     setMessage(error
       ? { kind: 'error', text: error.message }
-      : { kind: 'success', text: 'Check your email for a secure sign-in link. It can take a minute to arrive.' })
+      : { kind: 'success', text: 'Email sent. Open it and select the secure sign-in link. We never send or ask you to create a password.' })
   }
 
   async function acceptInvitation(event: FormEvent<HTMLFormElement>) {
@@ -162,7 +162,7 @@ export function MemberPortal() {
     if (error) setMessage({ kind: 'error', text: error.message })
     else {
       sessionStorage.removeItem('reunion-invitation-token')
-      setMessage({ kind: 'success', text: 'Your invitation is active. Your profile is ready for organizer review.' })
+      setMessage({ kind: 'success', text: 'Your invitation is active. This was the only time you needed the invitation code; future sign-ins require only your email.' })
       await loadMember(session.user.id)
     }
     setLoading(false)
@@ -269,7 +269,8 @@ export function MemberPortal() {
     )
   }
 
-  const storedInvitation = sessionStorage.getItem('reunion-invitation-token') || invitationTokenFromLocation(window.location.search)
+  const invitationFromLink = invitationTokenFromLocation(window.location.search)
+  const storedInvitation = sessionStorage.getItem('reunion-invitation-token') || invitationFromLink
   const organizer = roles.some((role) => ['admin', 'technical_admin', 'department_rep'].includes(role))
   const administrator = roles.some((role) => ['admin', 'technical_admin'].includes(role))
   const canInvite = administrator || roles.includes('invitation_manager')
@@ -283,22 +284,32 @@ export function MemberPortal() {
       {message && <Message kind={message.kind}>{message.text}</Message>}
       {loading && <Message kind="info">Loading your secure reunion record…</Message>}
 
-      {!session && !loading && (
-        <form className="portal-card portal-auth" onSubmit={requestMagicLink}>
-          <div><span className="portal-step">01</span><h3>Sign in by email</h3><p>Use the email address on your invitation. We will send a one-time secure link—no password needed. Pre-approved administrators do not need an invitation code.</p></div>
+      {!session && !loading && <>
+        <section className="portal-signin-guide" aria-labelledby="signin-guide-title">
+          <header><p className="portal-eyebrow">Passwordless access</p><h3 id="signin-guide-title">No username. No password. Just your email.</h3><p>Every time you sign in, we email you a fresh secure link. Open that link to enter the portal.</p></header>
+          <div className="portal-signin-guide__steps">
+            <article><span>First visit</span><h4>Activate your invitation once</h4><p>Open the complete invitation link from your organizer, enter the invited email address, and then open the secure email we send. The invitation code is normally embedded in the organizer's link.</p><small>Pre-approved administrators skip the invitation-code step.</small></article>
+            <article><span>Returning visit</span><h4>Use your email only</h4><p>Enter the same email address below. We send a new one-time sign-in link—never a password. Open it and you are signed in.</p><small>You will not need the invitation code again.</small></article>
+          </div>
+        </section>
+        <form className="portal-card portal-auth portal-auth--signin" onSubmit={requestMagicLink}>
+          <div><span className="portal-step">Sign in</span><h3>Send me a secure sign-in link</h3><p>Enter the email address connected to your reunion invitation or existing profile.</p></div>
           <label>Email address<input name="email" type="email" autoComplete="email" required /></label>
-          <label>Invitation code <span>(standard member invitations only)</span><input name="invite" defaultValue={invitationTokenFromLocation(window.location.search)} autoComplete="off" aria-describedby="invitation-code-help" /></label>
-          <p id="invitation-code-help" className="portal-help">If your organizer sent a full invitation link, the code is already embedded. Leave this blank for a pre-approved administrator account.</p>
-          <button className="portal-button" type="submit">Email my sign-in link</button>
+          <details className="portal-invite-code">
+            <summary>{invitationFromLink ? 'Invitation code detected in your link' : 'First visit with a separate invitation code?'}</summary>
+            <label>Invitation code <span>(first activation only)</span><input name="invite" defaultValue={invitationFromLink} autoComplete="off" aria-describedby="invitation-code-help" /></label>
+            <p id="invitation-code-help" className="portal-help">Paste a code only if an organizer sent it separately. If you opened a complete invitation link, it is already filled in. Pre-approved administrators leave this blank.</p>
+          </details>
+          <button className="portal-button" type="submit">Send secure link to my email</button>
         </form>
-      )}
+      </>}
 
       {session && !profile && !loading && (
         <form className="portal-card portal-auth" onSubmit={acceptInvitation}>
-          <div><span className="portal-step">02</span><h3>Activate your standard member invitation</h3><p>Signed in as <strong>{session.user.email}</strong>. This account has not been pre-approved, so enter the single-use code from the organizer's invitation link.</p></div>
-          <label>Invitation code<input name="invite" defaultValue={storedInvitation} required autoComplete="off" /></label>
+          <div><span className="portal-step">First visit only</span><h3>Finish activating your invitation</h3><p>You successfully signed in as <strong>{session.user.email}</strong>. Enter the invitation code once to connect this email to your member profile. You will not need the code on future visits.</p></div>
+          <label>Invitation code <span>(used once)</span><input name="invite" defaultValue={storedInvitation} required autoComplete="off" /></label>
           <label>Preferred name <span>(optional)</span><input name="preferredName" /></label>
-          <button className="portal-button" type="submit">Activate my profile</button>
+          <button className="portal-button" type="submit">Activate once and enter portal</button>
         </form>
       )}
 

@@ -2,7 +2,7 @@
 
 **Project:** SCT 1998–2002 Silver Jubilee Reunion Portal
 
-**Last updated:** October 11, 2026
+**Last updated:** October 14, 2026
 
 **Current release:** Phases 0–7 implemented
 
@@ -28,6 +28,7 @@ This file tracks delivered work against the reunion portal requirements. No priv
 ## Security and privacy controls
 
 - ✅ Supabase Auth passwordless email sign-in with exact invitation-email matching.
+- ✅ Member Portal separates first-time activation from returning sign-in and explicitly explains that no username or password is ever required.
 - ✅ Single-use, expiration-bound invitation tokens stored only as SHA-256 hashes.
 - ✅ First verified technical administrator: `sct9802@gmail.com`.
 - ✅ Least-privilege roles: member, department representative, committee lead, invitation manager, editor, event operator, finance, auditor, administrator, and technical administrator.

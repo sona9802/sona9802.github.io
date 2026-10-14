@@ -23,6 +23,8 @@ describe('Phase 2 form helpers', () => {
     const href = buildInvitationEmailHref('member@example.test', 'Batch Mate', 'https://example.test/?invite=abc#member-portal')
     expect(href).toContain('mailto:member%40example.test')
     expect(decodeURIComponent(href)).toContain('Invitation code: You do not need to copy a separate code.')
+    expect(decodeURIComponent(href)).toContain('No username or password is needed.')
+    expect(decodeURIComponent(href)).toContain('On future visits, enter only your email address')
     expect(decodeURIComponent(href)).toContain('https://example.test/?invite=abc#member-portal')
   })
 })
