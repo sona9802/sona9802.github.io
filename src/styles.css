@@ -236,6 +236,9 @@ h1 em, h2 em { color: var(--gold); font-weight: inherit; }
 .invitation-result { display: grid; grid-template-columns: 1fr auto; gap: .6rem 1rem; align-items: center; margin-top: 1.2rem; padding: 1rem; color: #f7eade; background: var(--burgundy-dark); }
 .invitation-result p { grid-column: 1 / -1; margin: 0; color: var(--gold); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .invitation-result code { min-width: 0; overflow-wrap: anywhere; font-size: .75rem; }
+.invitation-result__help { grid-column: 1 / -1; color: #f7eade; font-size: .82rem; line-height: 1.5; }
+.invitation-result a.portal-button { text-align: center; }
+.portal-help { margin: -.25rem 0 .25rem; color: var(--ink-soft); font-size: .82rem; line-height: 1.45; }
 .portal-button--copy { border-color: var(--gold); color: var(--burgundy-dark); background: var(--gold); }
 .review-list { margin-top: 1.5rem; border-top: 1px solid var(--line); }
 .review-list__head, .review-row { display: grid; grid-template-columns: minmax(180px, 1fr) 130px 180px; gap: 1rem; align-items: center; padding: .85rem 0; border-bottom: 1px solid var(--line); }

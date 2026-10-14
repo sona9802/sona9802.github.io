@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useState, type FormEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { buildAuthRedirectUrl, CONSENT_LABELS, invitationTokenFromLocation, normalizeCount, type ConsentType } from '../lib/phase2'
+import { buildAuthRedirectUrl, buildInvitationEmailHref, CONSENT_LABELS, invitationTokenFromLocation, normalizeCount, type ConsentType } from '../lib/phase2'
 import { phase2Enabled, supabase } from '../lib/supabase'
 
 const PortalWorkspace = lazy(() => import('./PortalWorkspace').then((module) => ({ default: module.PortalWorkspace })))
@@ -71,6 +71,7 @@ export function MemberPortal() {
   const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [invitationLink, setInvitationLink] = useState('')
+  const [invitationRecipient, setInvitationRecipient] = useState({ email: '', fullName: '' })
   const [loading, setLoading] = useState(phase2Enabled)
   const [message, setMessage] = useState<{ kind: 'success' | 'error' | 'info'; text: string } | null>(null)
 
@@ -85,6 +86,9 @@ export function MemberPortal() {
     ])
     if (profileResult.error) setMessage({ kind: 'error', text: profileResult.error.message })
     setProfile(profileResult.data as Profile | null)
+    if (profileResult.data && (window.location.hash.includes('access_token=') || new URLSearchParams(window.location.search).has('code'))) {
+      setMessage({ kind: 'success', text: 'Email confirmed. You are signed in, and this pre-approved account does not need a separate invitation code.' })
+    }
     if (rsvpResult.data) setRsvp(rsvpResult.data as Rsvp)
     setConsents((consentResult.data ?? []) as Consent[])
     const loadedRoles = ((roleResult.data ?? []) as Role[]).map(({ role_name }) => role_name)
@@ -227,9 +231,11 @@ export function MemberPortal() {
     if (!supabase) return
     const invitationForm = event.currentTarget
     const form = new FormData(event.currentTarget)
+    const email = String(form.get('email') ?? '').trim()
+    const fullName = String(form.get('full_name') ?? '').trim()
     const { data, error } = await supabase.rpc('create_invitation', {
-      p_email: String(form.get('email') ?? '').trim(),
-      p_full_name: String(form.get('full_name') ?? '').trim(),
+      p_email: email,
+      p_full_name: fullName,
       p_department_id: String(form.get('department_id') ?? '') || null,
       p_expires_days: 14,
     })
@@ -237,7 +243,8 @@ export function MemberPortal() {
     else if (data?.[0]?.invitation_token) {
       const link = `${window.location.origin}${window.location.pathname}?invite=${data[0].invitation_token}#member-portal`
       setInvitationLink(link)
-      setMessage({ kind: 'success', text: 'Invitation created. Copy the secure link now; the token is not stored in readable form.' })
+      setInvitationRecipient({ email, fullName })
+      setMessage({ kind: 'success', text: 'Invitation created. Send the complete secure link now; its code is embedded and is not stored in readable form.' })
       invitationForm.reset()
     }
   }
@@ -278,17 +285,18 @@ export function MemberPortal() {
 
       {!session && !loading && (
         <form className="portal-card portal-auth" onSubmit={requestMagicLink}>
-          <div><span className="portal-step">01</span><h3>Sign in by email</h3><p>Use the email address on your invitation. We will send a one-time secure link—no password needed.</p></div>
+          <div><span className="portal-step">01</span><h3>Sign in by email</h3><p>Use the email address on your invitation. We will send a one-time secure link—no password needed. Pre-approved administrators do not need an invitation code.</p></div>
           <label>Email address<input name="email" type="email" autoComplete="email" required /></label>
-          <label>Invitation token <span>(from your organizer)</span><input name="invite" defaultValue={invitationTokenFromLocation(window.location.search)} autoComplete="off" /></label>
+          <label>Invitation code <span>(standard member invitations only)</span><input name="invite" defaultValue={invitationTokenFromLocation(window.location.search)} autoComplete="off" aria-describedby="invitation-code-help" /></label>
+          <p id="invitation-code-help" className="portal-help">If your organizer sent a full invitation link, the code is already embedded. Leave this blank for a pre-approved administrator account.</p>
           <button className="portal-button" type="submit">Email my sign-in link</button>
         </form>
       )}
 
       {session && !profile && !loading && (
         <form className="portal-card portal-auth" onSubmit={acceptInvitation}>
-          <div><span className="portal-step">02</span><h3>Activate your invitation</h3><p>Signed in as <strong>{session.user.email}</strong>. Your token is single-use and must match this address.</p></div>
-          <label>Invitation token<input name="invite" defaultValue={storedInvitation} required autoComplete="off" /></label>
+          <div><span className="portal-step">02</span><h3>Activate your standard member invitation</h3><p>Signed in as <strong>{session.user.email}</strong>. This account has not been pre-approved, so enter the single-use code from the organizer's invitation link.</p></div>
+          <label>Invitation code<input name="invite" defaultValue={storedInvitation} required autoComplete="off" /></label>
           <label>Preferred name <span>(optional)</span><input name="preferredName" /></label>
           <button className="portal-button" type="submit">Activate my profile</button>
         </form>
@@ -350,7 +358,7 @@ export function MemberPortal() {
                 <label>Department<select name="department_id" defaultValue=""><option value="">Not assigned</option>{departments.map((department) => <option value={department.id} key={department.id}>{department.code} · {department.name}</option>)}</select></label>
                 <button className="portal-button" type="submit">Create invitation</button>
               </form>
-              {invitationLink && <div className="invitation-result"><p>Secure invitation link</p><code>{invitationLink}</code><button className="portal-button portal-button--copy" type="button" onClick={() => void navigator.clipboard.writeText(invitationLink)}>Copy link</button></div>}
+              {invitationLink && <div className="invitation-result"><p>Secure invitation link · code included</p><code>{invitationLink}</code><span className="invitation-result__help">The recipient should open this complete link. They do not need to copy a separate invitation code.</span><button className="portal-button portal-button--copy" type="button" onClick={() => void navigator.clipboard.writeText(invitationLink)}>Copy link</button><a className="portal-button portal-button--copy" href={buildInvitationEmailHref(invitationRecipient.email, invitationRecipient.fullName, invitationLink)}>Open email draft</a></div>}
               {administrator && <div className="review-list">
                 <div className="review-list__head"><span>Member</span><span>Status</span><span>Review</span></div>
                 {adminProfiles.map((item) => <div className="review-row" key={item.id}><span><strong>{item.full_name}</strong><small>{item.email_private}</small></span><span className={`status-pill status-pill--${item.verification_status}`}>{item.verification_status}</span><span>{item.verification_status === 'pending' ? <><button type="button" onClick={() => void reviewProfile(item.id, 'verified')}>Verify</button><button type="button" onClick={() => void reviewProfile(item.id, 'rejected')}>Reject</button></> : '—'}</span></div>)}

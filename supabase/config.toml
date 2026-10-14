@@ -23,6 +23,18 @@ additional_redirect_urls = ["http://localhost:5173/", "https://sona9802.github.i
 jwt_expiry = 3600
 enable_signup = true
 
+[auth.email.template.invite]
+subject = "Your SCT Reunion Portal invitation"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.confirmation]
+subject = "Activate your SCT Reunion Portal account"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.magic_link]
+subject = "Your SCT Reunion Portal secure sign-in link"
+content_path = "./supabase/templates/magic-link.html"
+
 [storage]
 enabled = true
 file_size_limit = "50MiB"

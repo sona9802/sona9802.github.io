@@ -86,6 +86,8 @@ Production deployment and verification completed on October 12, 2026.
 - ✅ Seven committees and five retention-policy categories verified in production.
 - ✅ All four required storage buckets verified in production.
 - ✅ `sct9802@gmail.com` remains active with `member` and `technical_admin` roles.
+- ✅ Reunion-branded invite, confirmation, and magic-link templates are versioned and ready for custom SMTP; Supabase's free-tier default provider currently blocks production template customization.
+- ✅ The Admin Console generates a ready-to-send email with the complete secure invitation link, explains that the code is embedded, and preserves the code through passwordless sign-in.
 - ✅ Corrective migration `202610120001` removes task-policy recursion and is verified in the signed-in production workspace.
 
 ### Production frontend deployment

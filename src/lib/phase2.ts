@@ -22,3 +22,28 @@ export function buildAuthRedirectUrl(origin: string, pathname: string, invitatio
   if (invitationToken) redirectUrl.searchParams.set('invite', invitationToken)
   return redirectUrl.toString()
 }
+
+export function buildInvitationEmailHref(email: string, fullName: string, invitationLink: string): string {
+  const subject = 'Your SCT 1998–2002 Reunion Portal invitation'
+  const body = [
+    `Hello ${fullName},`,
+    '',
+    'You have been invited to the SCT 1998–2002 Silver Jubilee Reunion Portal.',
+    '',
+    'Open this complete secure invitation link:',
+    invitationLink,
+    '',
+    'Invitation code: You do not need to copy a separate code. It is already embedded in the secure link above.',
+    '',
+    'Next steps:',
+    '1. Open the secure invitation link.',
+    '2. Enter this same email address and request the one-time sign-in email.',
+    '3. Open the sign-in email. You will return to the portal with your invitation code preserved.',
+    '4. Select “Activate my profile” and complete your reunion details.',
+    '',
+    'If either link expires, contact the organizing team for a new invitation.',
+    '',
+    'SCT 1998–2002 Reunion Organizing Team',
+  ].join('\n')
+  return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
