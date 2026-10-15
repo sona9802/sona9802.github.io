@@ -39,6 +39,17 @@ type Rsvp = {
 type Consent = { consent_type: ConsentType; granted: boolean }
 type Role = { role_name: string }
 type AdminProfile = Pick<Profile, 'id' | 'full_name' | 'preferred_name' | 'email_private' | 'verification_status' | 'department_id'>
+type InvitationReview = {
+  profile_id: string
+  email: string
+  full_name: string
+  profile_status: string
+  invitation_status: string | null
+  invitation_expires_at: string | null
+  email_confirmed_at: string | null
+  last_sign_in_at: string | null
+  display_status: string
+}
 type Department = { id: string; code: string; name: string }
 type Summary = {
   total_profiles: number
@@ -62,6 +73,26 @@ function Message({ kind, children }: { kind: 'success' | 'error' | 'info'; child
   return <p className={`portal-message portal-message--${kind}`} role={kind === 'error' ? 'alert' : 'status'}>{children}</p>
 }
 
+const INVITATION_STATUS_LABELS: Record<string, string> = {
+  invited: 'Invited',
+  signed_in_activation_pending: 'Signed in · activation pending',
+  invitation_expired: 'Invitation expired',
+  awaiting_verification: 'Awaiting verification',
+  verified: 'Verified',
+  rejected: 'Rejected',
+  suspended: 'Suspended',
+}
+
+function invitationStatusDetail(item: InvitationReview) {
+  if (item.display_status === 'signed_in_activation_pending') return `Last signed in ${new Date(item.last_sign_in_at!).toLocaleString()}. First-time invitation activation is not complete.`
+  if (item.display_status === 'awaiting_verification') return 'Invitation activated. Organizer review is required.'
+  if (item.display_status === 'verified') return 'Invitation activation and organizer review are complete.'
+  if (item.display_status === 'invitation_expired') return 'The invitation expired before activation.'
+  if (item.display_status === 'rejected') return 'The profile was rejected during organizer review.'
+  if (item.display_status === 'suspended') return 'Portal access is suspended.'
+  return 'Invitation sent. No completed sign-in has been recorded.'
+}
+
 export function MemberPortal() {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -70,6 +101,7 @@ export function MemberPortal() {
   const [roles, setRoles] = useState<string[]>([])
   const [summary, setSummary] = useState<Summary | null>(null)
   const [adminProfiles, setAdminProfiles] = useState<AdminProfile[]>([])
+  const [invitationReviews, setInvitationReviews] = useState<InvitationReview[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [invitationLink, setInvitationLink] = useState('')
   const [invitationRecipient, setInvitationRecipient] = useState({ email: '', fullName: '' })
@@ -102,8 +134,13 @@ export function MemberPortal() {
     const departmentsResult = await supabase.from('departments').select('id, code, name').eq('active', true).order('name')
     setDepartments((departmentsResult.data ?? []) as Department[])
     if (loadedRoles.some((role) => ['admin', 'technical_admin'].includes(role))) {
-      const profilesResult = await supabase.from('profiles').select('id, full_name, preferred_name, email_private, verification_status, department_id').order('full_name')
+      const [profilesResult, invitationReviewResult] = await Promise.all([
+        supabase.from('profiles').select('id, full_name, preferred_name, email_private, verification_status, department_id').order('full_name'),
+        supabase.rpc('invitation_review_queue'),
+      ])
       setAdminProfiles((profilesResult.data ?? []) as AdminProfile[])
+      setInvitationReviews((invitationReviewResult.data ?? []) as InvitationReview[])
+      if (invitationReviewResult.error) setMessage({ kind: 'error', text: invitationReviewResult.error.message })
     }
     setLoading(false)
   }, [])
@@ -266,6 +303,7 @@ export function MemberPortal() {
     if (error) setMessage({ kind: 'error', text: error.message })
     else {
       setAdminProfiles((items) => items.map((item) => item.id === profileId ? { ...item, verification_status: status } : item))
+      setInvitationReviews((items) => items.map((item) => item.profile_id === profileId ? { ...item, profile_status: status, display_status: status } : item))
       setMessage({ kind: 'success', text: `Profile marked ${status}.` })
     }
   }
@@ -436,7 +474,7 @@ export function MemberPortal() {
               {invitationLink && <div className="invitation-result"><p>Secure invitation link · code included</p><code>{invitationLink}</code><span className="invitation-result__help">The recipient should open this complete link. They do not need to copy a separate invitation code.</span><button className="portal-button portal-button--copy" type="button" onClick={() => void navigator.clipboard.writeText(invitationLink)}>Copy link</button><a className="portal-button portal-button--copy" href={buildInvitationEmailHref(invitationRecipient.email, invitationRecipient.fullName, invitationLink)}>Open email draft</a></div>}
               {administrator && <div className="review-list">
                 <div className="review-list__head"><span>Member</span><span>Status</span><span>Review</span></div>
-                {adminProfiles.map((item) => <div className="review-row" key={item.id}><span><strong>{item.full_name}</strong><small>{item.email_private}</small></span><span className={`status-pill status-pill--${item.verification_status}`}>{item.verification_status}</span><span>{item.verification_status === 'pending' ? <><button type="button" onClick={() => void reviewProfile(item.id, 'verified')}>Verify</button><button type="button" onClick={() => void reviewProfile(item.id, 'rejected')}>Reject</button></> : '—'}</span></div>)}
+                {invitationReviews.map((item) => <div className="review-row" key={item.profile_id}><span><strong>{item.full_name}</strong><small>{item.email}</small></span><span className="review-status"><span className={`status-pill status-pill--${item.display_status}`}>{INVITATION_STATUS_LABELS[item.display_status] || item.display_status.replaceAll('_', ' ')}</span><small>{invitationStatusDetail(item)}</small></span><span>{item.profile_status === 'pending' ? <><button type="button" onClick={() => void reviewProfile(item.profile_id, 'verified')}>Verify</button><button type="button" onClick={() => void reviewProfile(item.profile_id, 'rejected')}>Reject</button></> : '—'}</span></div>)}
               </div>}
             </section>}
 

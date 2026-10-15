@@ -46,6 +46,7 @@ This file tracks delivered work against the reunion portal requirements. No priv
 - ✅ The authenticated portal uses role-aware, keyboard-accessible tabs so only one major member or organizer section is displayed at a time; direct section links remain supported.
 - ✅ Members can search only directory-visible classmates; the committee workspace exposes privacy-safe team rosters and task summaries without private contact or profile fields.
 - ✅ Invitation managers can create single-use invitation links without receiving general administrator access.
+- ✅ Administrators see the real invitation lifecycle: invited, signed in with activation pending, awaiting verification, verified, expired, rejected, or suspended.
 - ✅ Department representatives can manage only their assigned department outreach and see scoped coverage.
 - ✅ Committee leads can create and maintain committee work, owners, priorities, dates, comments, and progress.
 - ✅ Editors can review submitted biographies and photographs without access to unrelated contact details.
@@ -75,7 +76,7 @@ Verified locally on October 14, 2026:
 | Empty-database migration rebuild | ✅ All 11 migrations applied successfully |
 | `npm run lint` | ✅ Passed |
 | `npm test -- --run` | ✅ Passed: 10 frontend tests |
-| `npm run test:db` | ✅ Passed: 79 pgTAP assertions, including authenticated committee-workspace and task-policy runtime checks |
+| `npm run test:db` | ✅ Passed: 84 pgTAP assertions, including invitation lifecycle, authenticated committee-workspace, and task-policy runtime checks |
 | Production-enabled `npm run build` | ✅ Passed with authenticated workspace code-split from the public bundle |
 | Phase 3–7 database schema test | ✅ Tables, RPCs, buckets, committees, and retention seeds covered |
 | Responsive workspace UI | ✅ Member, organizer, editorial, event, service, finance, and governance consoles implemented |
@@ -83,6 +84,8 @@ Verified locally on October 14, 2026:
 Committee workspace enhancement verified on October 14, 2026: keyboard-accessible team tabs, selected-team responsibilities and deliverables, task summaries, active key people, full registered rosters, responsive layouts, and privacy-safe backend feeds.
 
 Member portal navigation enhancement verified on October 14, 2026: the previous long scrolling workspace was replaced with a persistent left-side tab panel for member, organizer, editorial, event, finance, service, and governance sections. On narrow screens the same role-aware tabs become a compact horizontal scroller. Hash-based deep links and keyboard navigation are preserved.
+
+Invitation review status enhancement verified on October 14, 2026: administrator views now combine invitation, authentication, and profile-review state so a member who has authenticated is shown as signed in with activation pending rather than merely invited.
 
 Production deployment and verification completed on October 14, 2026.
 

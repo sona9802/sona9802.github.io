@@ -264,10 +264,15 @@ h1 em, h2 em { color: var(--gold); font-weight: inherit; }
 .portal-help { margin: -.25rem 0 .25rem; color: var(--ink-soft); font-size: .82rem; line-height: 1.45; }
 .portal-button--copy { border-color: var(--gold); color: var(--burgundy-dark); background: var(--gold); }
 .review-list { margin-top: 1.5rem; border-top: 1px solid var(--line); }
-.review-list__head, .review-row { display: grid; grid-template-columns: minmax(180px, 1fr) 130px 180px; gap: 1rem; align-items: center; padding: .85rem 0; border-bottom: 1px solid var(--line); }
+.review-list__head, .review-row { display: grid; grid-template-columns: minmax(180px, .9fr) minmax(240px, 1.2fr) 180px; gap: 1rem; align-items: center; padding: .85rem 0; border-bottom: 1px solid var(--line); }
 .review-list__head { color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .review-row > span:first-child { display: grid; gap: .2rem; }
 .review-row small { color: var(--muted); }
+.review-status { display: grid; gap: .4rem; justify-items: start; }
+.review-status small { max-width: 340px; line-height: 1.4; }
+.status-pill--signed_in_activation_pending { color: #5e3900; background: #f3d58b; }
+.status-pill--awaiting_verification { color: #29415f; background: #c9d9ef; }
+.status-pill--invitation_expired, .status-pill--rejected, .status-pill--suspended { color: #6e211c; background: #efc2bd; }
 .review-row button { margin-right: .45rem; padding: .4rem .65rem; border: 1px solid var(--line); color: var(--burgundy); background: transparent; font: inherit; font-size: .72rem; font-weight: 700; cursor: pointer; }
 
 .workspace-form, .admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
