@@ -71,7 +71,7 @@ Verified locally on October 14, 2026:
 
 | Check | Result |
 |---|---|
-| Empty-database migration rebuild | ✅ Migrations 001–007 applied successfully |
+| Empty-database migration rebuild | ✅ All 11 migrations applied successfully |
 | `npm run lint` | ✅ Passed |
 | `npm test -- --run` | ✅ Passed: 10 frontend tests |
 | `npm run test:db` | ✅ Passed: 79 pgTAP assertions, including authenticated committee-workspace and task-policy runtime checks |
@@ -81,27 +81,29 @@ Verified locally on October 14, 2026:
 
 Committee workspace enhancement verified on October 14, 2026: keyboard-accessible team tabs, selected-team responsibilities and deliverables, task summaries, active key people, full registered rosters, responsive layouts, and privacy-safe backend feeds.
 
-Production deployment and verification completed on October 12, 2026.
+Production deployment and verification completed on October 14, 2026.
 
 ### Production backend deployment
 
-- ✅ Migrations `202610110001` through `202610110003` applied to Supabase project `bjoimszikocvkxjgieuc`.
-- ✅ Remote migration ledger matches all eight local migrations.
+- ✅ Migrations through `202610140002` applied to Supabase project `bjoimszikocvkxjgieuc`.
+- ✅ Remote migration ledger matches all 11 local migrations.
 - ✅ Seven committees and five retention-policy categories verified in production.
 - ✅ All four required storage buckets verified in production.
 - ✅ `sct9802@gmail.com` remains active with `member` and `technical_admin` roles.
 - ✅ Reunion-branded invite, confirmation, and magic-link templates are versioned and ready for custom SMTP; Supabase's free-tier default provider currently blocks production template customization.
 - ✅ The Admin Console generates a ready-to-send email with the complete secure invitation link, explains that the code is embedded, and preserves the code through passwordless sign-in.
 - ✅ Corrective migration `202610120001` removes task-policy recursion and is verified in the signed-in production workspace.
+- ✅ Committee workspace migration `202610140002` provides privacy-safe roster and task-summary feeds to active members.
 
 ### Production frontend deployment
 
-- ✅ Commits `76240ff` and `81f1220` pushed to the production `main` branch.
+- ✅ Committee workspace commit `b30a763` pushed to the production `main` branch.
 - ✅ GitHub continuous integration passed lint, frontend tests, and production build.
 - ✅ GitHub Pages build and deployment completed successfully.
 - ✅ Live HTML, stylesheet, public JavaScript, and lazy-loaded private-workspace asset return successfully over HTTPS.
 - ✅ Live public copy identifies the complete invitation-only workspace as available.
 - ✅ Live private-workspace asset contains the directory, organizer, editorial export, event operations, outreach, and governance consoles.
+- ✅ Live private-workspace asset contains the interactive committee tabs, task details, key-people view, and complete registered rosters.
 - ✅ Signed-in administrator QA confirms all consoles and task queries load without policy errors.
 
 ## Intentionally excluded
