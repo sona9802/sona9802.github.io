@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState, type FormEvent } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState, type FormEvent, type KeyboardEvent } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { buildAuthRedirectUrl, buildInvitationEmailHref, CONSENT_LABELS, invitationTokenFromLocation, normalizeCount, type ConsentType } from '../lib/phase2'
 import { phase2Enabled, supabase } from '../lib/supabase'
@@ -49,6 +49,7 @@ type Summary = {
   undecided: number
   not_attending: number
 }
+type PortalTab = { id: string; label: string }
 
 const blankRsvp: Rsvp = {
   attendance_status: 'undecided', arrival_date: null, departure_date: null,
@@ -74,6 +75,7 @@ export function MemberPortal() {
   const [invitationRecipient, setInvitationRecipient] = useState({ email: '', fullName: '' })
   const [loading, setLoading] = useState(phase2Enabled)
   const [message, setMessage] = useState<{ kind: 'success' | 'error' | 'info'; text: string } | null>(null)
+  const [activePortalSection, setActivePortalSection] = useState(() => window.location.hash.slice(1) || 'my-profile')
 
   const loadMember = useCallback(async (userId: string) => {
     if (!supabase) return
@@ -131,6 +133,15 @@ export function MemberPortal() {
   useEffect(() => {
     if (session) document.getElementById('member-portal')?.scrollIntoView({ block: 'start' })
   }, [session])
+
+  useEffect(() => {
+    const syncSectionFromHash = () => {
+      const section = window.location.hash.slice(1)
+      if (section && section !== 'member-portal') setActivePortalSection(section)
+    }
+    window.addEventListener('hashchange', syncSectionFromHash)
+    return () => window.removeEventListener('hashchange', syncSectionFromHash)
+  }, [])
 
   async function requestMagicLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -274,6 +285,46 @@ export function MemberPortal() {
   const organizer = roles.some((role) => ['admin', 'technical_admin', 'department_rep'].includes(role))
   const administrator = roles.some((role) => ['admin', 'technical_admin'].includes(role))
   const canInvite = administrator || roles.includes('invitation_manager')
+  const workspaceOrganizer = organizer || roles.includes('committee_lead')
+  const portalTabs: PortalTab[] = [
+    { id: 'my-profile', label: 'Profile' },
+    { id: 'my-rsvp', label: 'RSVP' },
+    { id: 'my-consent', label: 'Privacy choices' },
+    { id: 'member-directory', label: 'Directory' },
+    { id: 'committee-workspace', label: 'Committees' },
+    { id: 'task-board', label: 'Tasks' },
+    { id: 'member-announcements', label: 'Updates' },
+    { id: 'biography-editor', label: 'Biography' },
+    { id: 'media-library', label: 'Photos' },
+    { id: 'event-program', label: 'Event program' },
+    { id: 'feedback-privacy', label: 'Support' },
+    ...(organizer ? [{ id: 'organizer-summary', label: 'RSVP snapshot' }, { id: 'contact-outreach', label: 'Outreach' }] : []),
+    ...(workspaceOrganizer ? [{ id: 'organizer-dashboard', label: 'Organizer dashboard' }] : []),
+    ...(canInvite ? [{ id: 'admin-console', label: 'Invitations' }] : []),
+    ...(roles.includes('editor') || administrator ? [{ id: 'editorial-console', label: 'Editorial' }] : []),
+    ...(administrator ? [{ id: 'access-management', label: 'Access' }, { id: 'admin-queues', label: 'Service queues' }] : []),
+    ...(roles.includes('event_operator') || administrator ? [{ id: 'event-operations', label: 'Event controls' }, { id: 'operations-directory', label: 'Operations' }] : []),
+    ...(roles.includes('finance') || administrator ? [{ id: 'finance-summary', label: 'Finance' }] : []),
+    ...(roles.includes('auditor') || administrator ? [{ id: 'audit-retention', label: 'Governance' }] : []),
+  ]
+  const activePortalTab = portalTabs.some((tab) => tab.id === activePortalSection) ? activePortalSection : 'my-profile'
+
+  function selectPortalTab(sectionId: string) {
+    setActivePortalSection(sectionId)
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${sectionId}`)
+  }
+
+  function selectAdjacentPortalTab(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+    event.preventDefault()
+    const nextIndex = event.key === 'Home' ? 0
+      : event.key === 'End' ? portalTabs.length - 1
+        : (index + (['ArrowDown', 'ArrowRight'].includes(event.key) ? 1 : -1) + portalTabs.length) % portalTabs.length
+    const nextTab = portalTabs[nextIndex]
+    if (!nextTab) return
+    selectPortalTab(nextTab.id)
+    document.getElementById(`portal-tab-${nextTab.id}`)?.focus()
+  }
 
   return (
     <section className="member-portal" id="member-portal" aria-labelledby="portal-title">
@@ -318,10 +369,23 @@ export function MemberPortal() {
           <aside className="portal-sidebar">
             <p className="portal-welcome">Welcome back,<strong>{profile.preferred_name || profile.full_name}</strong></p>
             <span className={`status-pill status-pill--${profile.verification_status}`}>{profile.verification_status}</span>
-            <nav aria-label="Member portal navigation"><a href="#my-profile">Profile</a><a href="#my-rsvp">RSVP</a><a href="#my-consent">Privacy choices</a><a href="#member-directory">Directory</a><a href="#committee-workspace">Committees</a><a href="#task-board">Tasks</a><a href="#biography-editor">Biography</a><a href="#media-library">Photos</a>{organizer && <a href="#organizer-dashboard">Organizer dashboard</a>}{canInvite && <a href="#admin-console">Admin console</a>}{administrator && <a href="#access-management">Access</a>}</nav>
+            <nav className="portal-tabs" aria-label="Member portal sections" role="tablist" aria-orientation="horizontal">
+              {portalTabs.map((tab, index) => <button
+                id={`portal-tab-${tab.id}`}
+                className={activePortalTab === tab.id ? 'is-active' : ''}
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={activePortalTab === tab.id}
+                aria-controls={tab.id}
+                tabIndex={activePortalTab === tab.id ? 0 : -1}
+                onClick={() => selectPortalTab(tab.id)}
+                onKeyDown={(event) => selectAdjacentPortalTab(event, index)}
+              >{tab.label}</button>)}
+            </nav>
           </aside>
           <div className="portal-main">
-            <form className="portal-card" id="my-profile" onSubmit={saveProfile}>
+            <form className="portal-card" id="my-profile" role="tabpanel" aria-labelledby="portal-tab-my-profile" hidden={activePortalTab !== 'my-profile'} onSubmit={saveProfile}>
               <header><div><span className="portal-step">Profile</span><h3>Your details</h3></div><p>Your email, phone, and location remain private unless you choose batch visibility.</p></header>
               <div className="portal-form-grid">
                 <label>Full name<input value={profile.full_name} disabled /></label>
@@ -339,7 +403,7 @@ export function MemberPortal() {
               <button className="portal-button" type="submit">Save profile</button>
             </form>
 
-            <form className="portal-card" id="my-rsvp" onSubmit={saveRsvp}>
+            <form className="portal-card" id="my-rsvp" role="tabpanel" aria-labelledby="portal-tab-my-rsvp" hidden={activePortalTab !== 'my-rsvp'} onSubmit={saveRsvp}>
               <header><div><span className="portal-step">RSVP</span><h3>Will you join us?</h3></div><p>Family and support needs are visible only to authorized organizers.</p></header>
               <fieldset className="portal-radio"><legend>Attendance</legend>{(['attending', 'undecided', 'not_attending'] as const).map((value) => <label key={value}><input type="radio" name="attendance_status" value={value} defaultChecked={rsvp.attendance_status === value} /> {value.replace('_', ' ')}</label>)}</fieldset>
               <div className="portal-form-grid">
@@ -354,14 +418,14 @@ export function MemberPortal() {
               <button className="portal-button" type="submit">Save RSVP</button>
             </form>
 
-            <section className="portal-card" id="my-consent">
+            <section className="portal-card" id="my-consent" role="tabpanel" aria-labelledby="portal-tab-my-consent" hidden={activePortalTab !== 'my-consent'}>
               <header><div><span className="portal-step">Privacy</span><h3>Your publication choices</h3></div><p>Every choice starts off. You can withdraw consent at any time.</p></header>
               <div className="consent-list">{consents.map((consent) => <label key={consent.consent_type}><span>{CONSENT_LABELS[consent.consent_type]}</span><input type="checkbox" checked={consent.granted} onChange={(event) => void changeConsent(consent.consent_type, event.target.checked)} /></label>)}</div>
             </section>
 
-            {organizer && summary && <section className="portal-card" id="organizer-summary"><header><div><span className="portal-step">Organizer</span><h3>RSVP snapshot</h3></div><p>{roles.includes('department_rep') && !roles.includes('admin') ? 'Your department only' : 'All active profiles'}</p></header><dl className="summary-grid"><div><dt>Profiles</dt><dd>{summary.total_profiles}</dd></div><div><dt>Responses</dt><dd>{summary.responses}</dd></div><div><dt>Alumni attending</dt><dd>{summary.attending_alumni}</dd></div><div><dt>Family attending</dt><dd>{summary.attending_spouses + summary.attending_children}</dd></div><div><dt>Undecided</dt><dd>{summary.undecided}</dd></div><div><dt>Not attending</dt><dd>{summary.not_attending}</dd></div></dl></section>}
+            {organizer && summary && <section className="portal-card" id="organizer-summary" role="tabpanel" aria-labelledby="portal-tab-organizer-summary" hidden={activePortalTab !== 'organizer-summary'}><header><div><span className="portal-step">Organizer</span><h3>RSVP snapshot</h3></div><p>{roles.includes('department_rep') && !roles.includes('admin') ? 'Your department only' : 'All active profiles'}</p></header><dl className="summary-grid"><div><dt>Profiles</dt><dd>{summary.total_profiles}</dd></div><div><dt>Responses</dt><dd>{summary.responses}</dd></div><div><dt>Alumni attending</dt><dd>{summary.attending_alumni}</dd></div><div><dt>Family attending</dt><dd>{summary.attending_spouses + summary.attending_children}</dd></div><div><dt>Undecided</dt><dd>{summary.undecided}</dd></div><div><dt>Not attending</dt><dd>{summary.not_attending}</dd></div></dl></section>}
 
-            {canInvite && <section className="portal-card" id="admin-console">
+            {canInvite && <section className="portal-card" id="admin-console" role="tabpanel" aria-labelledby="portal-tab-admin-console" hidden={activePortalTab !== 'admin-console'}>
               <header><div><span className="portal-step">Administration</span><h3>Invitations & review</h3></div><p>Invitation creation and profile decisions are written to the audit log.</p></header>
               <form className="admin-invite" onSubmit={createInvitation}>
                 <label>Alumni name<input name="full_name" required /></label>
@@ -377,7 +441,7 @@ export function MemberPortal() {
             </section>}
 
             <Suspense fallback={<p className="portal-message portal-message--info" role="status">Loading the reunion workspace…</p>}>
-              <PortalWorkspace userId={session.user.id} roles={roles} departments={departments} profiles={adminProfiles} />
+              <PortalWorkspace userId={session.user.id} roles={roles} departments={departments} profiles={adminProfiles} activeSection={activePortalTab} />
             </Suspense>
           </div>
         </div>

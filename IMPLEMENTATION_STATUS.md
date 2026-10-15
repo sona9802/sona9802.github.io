@@ -43,6 +43,7 @@ This file tracks delivered work against the reunion portal requirements. No priv
 ## Member and organizer capabilities
 
 - ✅ Members can update their own profile, RSVP, family counts, logistics needs, consent, biography, photographs, feedback, and data requests.
+- ✅ The authenticated portal uses role-aware, keyboard-accessible tabs so only one major member or organizer section is displayed at a time; direct section links remain supported.
 - ✅ Members can search only directory-visible classmates; the committee workspace exposes privacy-safe team rosters and task summaries without private contact or profile fields.
 - ✅ Invitation managers can create single-use invitation links without receiving general administrator access.
 - ✅ Department representatives can manage only their assigned department outreach and see scoped coverage.
@@ -80,6 +81,8 @@ Verified locally on October 14, 2026:
 | Responsive workspace UI | ✅ Member, organizer, editorial, event, service, finance, and governance consoles implemented |
 
 Committee workspace enhancement verified on October 14, 2026: keyboard-accessible team tabs, selected-team responsibilities and deliverables, task summaries, active key people, full registered rosters, responsive layouts, and privacy-safe backend feeds.
+
+Member portal navigation enhancement verified on October 14, 2026: the previous long scrolling workspace was replaced with responsive, role-aware tabs for member, organizer, editorial, event, finance, service, and governance sections. Hash-based deep links and keyboard navigation are preserved.
 
 Production deployment and verification completed on October 14, 2026.
 
