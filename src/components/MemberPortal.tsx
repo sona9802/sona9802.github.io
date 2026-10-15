@@ -393,16 +393,16 @@ export function MemberPortal() {
         </form>
       </>}
 
-      {session && !profile && !loading && (
+      {session && (!profile || profile.verification_status === 'invited') && !loading && (
         <form className="portal-card portal-auth" onSubmit={acceptInvitation}>
-          <div><span className="portal-step">First visit only</span><h3>Finish activating your invitation</h3><p>You successfully signed in as <strong>{session.user.email}</strong>. Enter the invitation code once to connect this email to your member profile. You will not need the code on future visits.</p></div>
+          <div><span className="portal-step">First visit only</span><h3>Finish activating your invitation</h3><p>You successfully signed in as <strong>{session.user.email}</strong>. {profile?.verification_status === 'invited' ? 'Your email is confirmed, but your invitation still needs to be activated.' : 'Enter the invitation code once to connect this email to your member profile.'} You will not need the code on future visits.</p></div>
           <label>Invitation code <span>(used once)</span><input name="invite" defaultValue={storedInvitation} required autoComplete="off" /></label>
-          <label>Preferred name <span>(optional)</span><input name="preferredName" /></label>
+          <label>Preferred name <span>(optional)</span><input name="preferredName" defaultValue={profile?.preferred_name ?? ''} /></label>
           <button className="portal-button" type="submit">Activate once and enter portal</button>
         </form>
       )}
 
-      {session && profile && (
+      {session && profile && profile.verification_status !== 'invited' && (
         <div className="portal-workspace">
           <aside className="portal-sidebar">
             <p className="portal-welcome">Welcome back,<strong>{profile.preferred_name || profile.full_name}</strong></p>

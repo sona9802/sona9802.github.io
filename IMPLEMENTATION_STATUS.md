@@ -28,6 +28,7 @@ This file tracks delivered work against the reunion portal requirements. No priv
 ## Security and privacy controls
 
 - ✅ Supabase Auth passwordless email sign-in with exact invitation-email matching.
+- ✅ Signed-in invitees with pre-created profiles are held at the activation screen until their one-time invitation code is accepted.
 - ✅ Member Portal separates first-time activation from returning sign-in and explicitly explains that no username or password is ever required.
 - ✅ Single-use, expiration-bound invitation tokens stored only as SHA-256 hashes.
 - ✅ First verified technical administrator: `sct9802@gmail.com`.
@@ -76,7 +77,7 @@ Verified locally on October 14, 2026:
 | Empty-database migration rebuild | ✅ All 11 migrations applied successfully |
 | `npm run lint` | ✅ Passed |
 | `npm test -- --run` | ✅ Passed: 10 frontend tests |
-| `npm run test:db` | ✅ Passed: 84 pgTAP assertions, including invitation lifecycle, authenticated committee-workspace, and task-policy runtime checks |
+| `npm run test:db` | ✅ Passed: 89 pgTAP assertions, including pre-created-profile activation, invitation lifecycle, authenticated committee-workspace, and task-policy runtime checks |
 | Production-enabled `npm run build` | ✅ Passed with authenticated workspace code-split from the public bundle |
 | Phase 3–7 database schema test | ✅ Tables, RPCs, buckets, committees, and retention seeds covered |
 | Responsive workspace UI | ✅ Member, organizer, editorial, event, service, finance, and governance consoles implemented |
@@ -86,6 +87,8 @@ Committee workspace enhancement verified on October 14, 2026: keyboard-accessibl
 Member portal navigation enhancement verified on October 14, 2026: the previous long scrolling workspace was replaced with a persistent left-side tab panel for member, organizer, editorial, event, finance, service, and governance sections. On narrow screens the same role-aware tabs become a compact horizontal scroller. Hash-based deep links and keyboard navigation are preserved.
 
 Invitation review status enhancement verified on October 14, 2026: administrator views now combine invitation, authentication, and profile-review state so a member who has authenticated is shown as signed in with activation pending rather than merely invited.
+
+Pre-created profile activation fix verified on October 14, 2026: signed-in invitees whose profile remains `invited` now receive the one-time activation form, and successful token acceptance advances the profile to organizer review instead of returning them to the activation screen.
 
 Production deployment and verification completed on October 14, 2026.
 
