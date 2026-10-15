@@ -19,7 +19,7 @@ This file tracks delivered work against the reunion portal requirements. No priv
 | Phase 0 — foundation | ✅ Implemented | Architecture, privacy baseline, CI, runbooks, decision log, Supabase project, and repository controls. |
 | Phase 1 — public site | ✅ Implemented | Reunion identity, dates, venue, program, committees, announcements, contact, privacy notice, responsive and accessible presentation. |
 | Phase 2 — secure member MVP | ✅ Implemented | Passwordless invitation onboarding, profiles, verification, roles, RSVP/family logistics, separate consent decisions, admin console, RLS, and audit trail. |
-| Phase 3 — organizing workspace | ✅ Implemented | Searchable consent-aware directory, department outreach and coverage, seven committee workspaces, role assignment, tasks, comments, dependencies, announcements, notifications, and organizer dashboard. |
+| Phase 3 — organizing workspace | ✅ Implemented | Searchable consent-aware directory, department outreach and coverage, seven interactive committee workspaces with task, leadership, and roster views, role assignment, tasks, comments, dependencies, announcements, notifications, and organizer dashboard. |
 | Phase 4 — biographies and media | ✅ Implemented | Biography drafting/submission/editorial approval, member approval/withdrawal, private image upload, signed preview, moderation, separated publication decisions, and storage policies. |
 | Phase 5 — editorial production | ✅ Implemented | Editor queues, immutable originals, versioned review, consent-filtered book manifest, approved-asset metadata, and time-limited audited export records. |
 | Phase 6 — event operations | ✅ Implemented | Faculty/staff tracking, detailed public/member program, volunteer shifts and assignment notifications, emergency/vendor contacts, approved finance summaries, mobile-friendly check-in, and live event dashboard. |
@@ -43,7 +43,7 @@ This file tracks delivered work against the reunion portal requirements. No priv
 ## Member and organizer capabilities
 
 - ✅ Members can update their own profile, RSVP, family counts, logistics needs, consent, biography, photographs, feedback, and data requests.
-- ✅ Members can search only directory-visible classmates and see only work relevant to their roles or committees.
+- ✅ Members can search only directory-visible classmates; the committee workspace exposes privacy-safe team rosters and task summaries without private contact or profile fields.
 - ✅ Invitation managers can create single-use invitation links without receiving general administrator access.
 - ✅ Department representatives can manage only their assigned department outreach and see scoped coverage.
 - ✅ Committee leads can create and maintain committee work, owners, priorities, dates, comments, and progress.
@@ -67,17 +67,19 @@ Four storage buckets are configured:
 
 ## Verification
 
-Verified locally on October 11, 2026:
+Verified locally on October 14, 2026:
 
 | Check | Result |
 |---|---|
 | Empty-database migration rebuild | ✅ Migrations 001–007 applied successfully |
 | `npm run lint` | ✅ Passed |
-| `npm test -- --run` | ✅ Passed: 9 frontend tests |
-| `npm run test:db` | ✅ Passed: 70 pgTAP assertions, including authenticated task-policy runtime checks |
+| `npm test -- --run` | ✅ Passed: 10 frontend tests |
+| `npm run test:db` | ✅ Passed: 79 pgTAP assertions, including authenticated committee-workspace and task-policy runtime checks |
 | Production-enabled `npm run build` | ✅ Passed with authenticated workspace code-split from the public bundle |
 | Phase 3–7 database schema test | ✅ Tables, RPCs, buckets, committees, and retention seeds covered |
 | Responsive workspace UI | ✅ Member, organizer, editorial, event, service, finance, and governance consoles implemented |
+
+Committee workspace enhancement verified on October 14, 2026: keyboard-accessible team tabs, selected-team responsibilities and deliverables, task summaries, active key people, full registered rosters, responsive layouts, and privacy-safe backend feeds.
 
 Production deployment and verification completed on October 12, 2026.
 

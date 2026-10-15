@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { AdminOperations } from './AdminOperations'
 
 type Department = { id: string; code: string; name: string }
 type Person = { id: string; full_name: string; preferred_name?: string | null; email_private?: string; verification_status?: string; department_id?: string | null }
-type Committee = { id: string; name: string; purpose: string; status: string; meeting_frequency: string | null; requires_india_coordinator: boolean }
+type Committee = { id: string; name: string; purpose: string; responsibilities: string | null; deliverables: string | null; status: string; meeting_frequency: string | null; requires_india_coordinator: boolean }
 type CommitteeMember = { committee_id: string; profile_id: string; committee_role: string; active: boolean }
 type Task = { id: string; task_number: number; committee_id: string; owner_profile_id: string | null; title: string; description: string; priority: string; status: string; due_date: string | null; progress_note: string | null }
+type CommitteeRosterMember = CommitteeMember & { display_name: string; department_code: string | null }
+type CommitteeWorkspaceTask = Task & { owner_display_name: string | null }
 type Announcement = { id: string; title: string; body: string; audience_type: string; pinned: boolean; publish_at: string | null; created_at: string }
 type Biography = { id: string; profile_id: string; original_text: string; submitted_text: string | null; edited_text: string | null; editor_note: string | null; editorial_status: string; version: number }
 type MediaAsset = { id: string; uploader_profile_id: string; storage_bucket: string; storage_path: string; media_type: string; category: string; caption: string | null; moderation_status: string; book_approved: boolean; public_gallery_approved: boolean }
@@ -27,6 +29,10 @@ type Props = {
 const ADMIN_ROLES = ['admin', 'technical_admin']
 const ROLE_OPTIONS = ['member', 'department_rep', 'committee_lead', 'invitation_manager', 'editor', 'event_operator', 'finance', 'auditor', 'admin']
 const TASK_STATUSES = ['ready', 'in_progress', 'blocked', 'completed']
+const COMMITTEE_ROLE_LABELS: Record<string, string> = {
+  lead: 'Committee lead', deputy: 'Deputy lead', india_coordinator: 'India coordinator',
+  finance_liaison: 'Finance liaison', member: 'Member',
+}
 
 function displayPerson(person: Person | undefined, fallback = 'Unassigned') {
   return person ? person.preferred_name || person.full_name : fallback
@@ -47,8 +53,10 @@ export function PortalWorkspace({ userId, roles, departments, profiles }: Props)
   const organizer = administrator || roles.includes('department_rep') || roles.includes('committee_lead')
   const eventOperator = administrator || roles.includes('event_operator')
   const [committees, setCommittees] = useState<Committee[]>([])
-  const [memberships, setMemberships] = useState<CommitteeMember[]>([])
   const [tasks, setTasks] = useState<Task[]>([])
+  const [committeeRoster, setCommitteeRoster] = useState<CommitteeRosterMember[]>([])
+  const [committeeTasks, setCommitteeTasks] = useState<CommitteeWorkspaceTask[]>([])
+  const [activeCommitteeId, setActiveCommitteeId] = useState<string | null>(null)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [biographies, setBiographies] = useState<Biography[]>([])
   const [media, setMedia] = useState<MediaAsset[]>([])
@@ -74,8 +82,7 @@ export function PortalWorkspace({ userId, roles, departments, profiles }: Props)
   const loadWorkspace = useCallback(async () => {
     if (!supabase) return
     const requests = await Promise.all([
-      supabase.from('committees').select('id,name,purpose,status,meeting_frequency,requires_india_coordinator').order('name'),
-      supabase.from('committee_members').select('committee_id,profile_id,committee_role,active'),
+      supabase.from('committees').select('id,name,purpose,responsibilities,deliverables,status,meeting_frequency,requires_india_coordinator').order('name'),
       supabase.from('tasks').select('id,task_number,committee_id,owner_profile_id,title,description,priority,status,due_date,progress_note').order('due_date', { ascending: true, nullsFirst: false }),
       supabase.from('announcements').select('id,title,body,audience_type,pinned,publish_at,created_at').order('pinned', { ascending: false }).order('created_at', { ascending: false }),
       supabase.from('biographies').select('id,profile_id,original_text,submitted_text,edited_text,editor_note,editorial_status,version').order('updated_at', { ascending: false }),
@@ -84,17 +91,22 @@ export function PortalWorkspace({ userId, roles, departments, profiles }: Props)
       supabase.rpc('member_directory', { p_query: directoryQuery }),
       supabase.from('program_items').select('id,title,starts_at,ends_at,venue,status,is_public').order('starts_at'),
       supabase.from('volunteer_shifts').select('id,title,starts_at,ends_at,location,required_volunteers,status').order('starts_at'),
+      supabase.rpc('committee_workspace_members'),
+      supabase.rpc('committee_workspace_tasks'),
     ])
-    setCommittees((requests[0].data ?? []) as Committee[])
-    setMemberships((requests[1].data ?? []) as CommitteeMember[])
-    setTasks((requests[2].data ?? []) as Task[])
-    setAnnouncements((requests[3].data ?? []) as Announcement[])
-    setBiographies((requests[4].data ?? []) as Biography[])
-    setMedia((requests[5].data ?? []) as MediaAsset[])
-    setNotifications((requests[6].data ?? []) as Notice[])
-    setDirectory((requests[7].data ?? []) as DirectoryEntry[])
-    setProgram((requests[8].data ?? []) as ProgramItem[])
-    setShifts((requests[9].data ?? []) as Shift[])
+    const loadedCommittees = (requests[0].data ?? []) as Committee[]
+    setCommittees(loadedCommittees)
+    setActiveCommitteeId((current) => current && loadedCommittees.some((item) => item.id === current) ? current : loadedCommittees[0]?.id ?? null)
+    setTasks((requests[1].data ?? []) as Task[])
+    setAnnouncements((requests[2].data ?? []) as Announcement[])
+    setBiographies((requests[3].data ?? []) as Biography[])
+    setMedia((requests[4].data ?? []) as MediaAsset[])
+    setNotifications((requests[5].data ?? []) as Notice[])
+    setDirectory((requests[6].data ?? []) as DirectoryEntry[])
+    setProgram((requests[7].data ?? []) as ProgramItem[])
+    setShifts((requests[8].data ?? []) as Shift[])
+    setCommitteeRoster((requests[9].data ?? []) as CommitteeRosterMember[])
+    setCommitteeTasks((requests[10].data ?? []) as CommitteeWorkspaceTask[])
 
     if (organizer) {
       const [dashboardResult, coverageResult] = await Promise.all([
@@ -352,6 +364,23 @@ export function PortalWorkspace({ userId, roles, departments, profiles }: Props)
   const myBiography = biographies.find((item) => item.profile_id === userId)
   const myMedia = media.filter((item) => item.uploader_profile_id === userId)
   const relevantTasks = tasks
+  const activeCommittee = committees.find((item) => item.id === activeCommitteeId) ?? committees[0]
+  const activeCommitteeMembers = committeeRoster.filter((item) => item.committee_id === activeCommittee?.id)
+  const activeCommitteeTasks = committeeTasks.filter((item) => item.committee_id === activeCommittee?.id)
+  const keyCommitteePeople = activeCommitteeMembers.filter((item) => item.active && item.committee_role !== 'member')
+  const activeTaskCount = activeCommitteeTasks.filter((item) => !['completed', 'cancelled'].includes(item.status)).length
+
+  function selectAdjacentCommittee(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+    event.preventDefault()
+    const nextIndex = event.key === 'Home' ? 0
+      : event.key === 'End' ? committees.length - 1
+        : (index + (event.key === 'ArrowRight' ? 1 : -1) + committees.length) % committees.length
+    const nextCommittee = committees[nextIndex]
+    if (!nextCommittee) return
+    setActiveCommitteeId(nextCommittee.id)
+    document.getElementById(`committee-tab-${nextCommittee.id}`)?.focus()
+  }
 
   return (
     <>
@@ -370,8 +399,55 @@ export function PortalWorkspace({ userId, roles, departments, profiles }: Props)
       </section>
 
       <section className="portal-card" id="committee-workspace">
-        <header><div><span className="portal-step">Committees</span><h3>Working teams</h3></div><p>Roster, responsibility, and status for all seven reunion committees.</p></header>
-        <div className="card-grid">{committees.map((committee) => <article className="mini-card" key={committee.id}><span className={`status-pill status-pill--${committee.status}`}>{committee.status}</span><h4>{committee.name}</h4><p>{committee.purpose}</p><small>{memberships.filter((item) => item.committee_id === committee.id && item.active).length} active members · {committee.meeting_frequency || 'Cadence to be set'}</small></article>)}</div>
+        <header><div><span className="portal-step">Committees</span><h3>Working teams</h3></div><p>Select a team to see its responsibilities, current tasks, active leaders, and complete roster.</p></header>
+        {committees.length === 0 ? <p className="committee-empty">No committees are available yet.</p> : <>
+          <div className="committee-tabs" role="tablist" aria-label="Reunion working teams">
+            {committees.map((committee, index) => {
+              const selected = committee.id === activeCommittee?.id
+              const memberCount = committeeRoster.filter((item) => item.committee_id === committee.id && item.active).length
+              const taskCount = committeeTasks.filter((item) => item.committee_id === committee.id && !['completed', 'cancelled'].includes(item.status)).length
+              return <button
+                id={`committee-tab-${committee.id}`}
+                className={selected ? 'committee-tab is-active' : 'committee-tab'}
+                key={committee.id}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                aria-controls={`committee-panel-${committee.id}`}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => setActiveCommitteeId(committee.id)}
+                onKeyDown={(event) => selectAdjacentCommittee(event, index)}
+              ><span>{committee.name}</span><small>{taskCount} open · {memberCount} members</small></button>
+            })}
+          </div>
+          {activeCommittee && <div className="committee-panel" id={`committee-panel-${activeCommittee.id}`} role="tabpanel" aria-labelledby={`committee-tab-${activeCommittee.id}`}>
+            <div className="committee-panel__intro">
+              <div><span className={`status-pill status-pill--${activeCommittee.status}`}>{activeCommittee.status}</span><h4>{activeCommittee.name}</h4><p>{activeCommittee.purpose}</p></div>
+              <dl className="committee-stats"><div><dt>Open tasks</dt><dd>{activeTaskCount}</dd></div><div><dt>Active members</dt><dd>{activeCommitteeMembers.filter((item) => item.active).length}</dd></div><div><dt>Meeting cadence</dt><dd>{activeCommittee.meeting_frequency || 'To be set'}</dd></div></dl>
+            </div>
+            <div className="committee-brief">
+              <div><h5>What this team handles</h5><ul>{(activeCommittee.responsibilities || activeCommittee.purpose).split(',').map((item) => <li key={item.trim()}>{item.trim()}</li>)}</ul></div>
+              <div><h5>Expected result</h5><p>{activeCommittee.deliverables || 'Deliverables are being finalized.'}</p></div>
+            </div>
+            <section className="committee-panel__section" aria-labelledby={`committee-tasks-${activeCommittee.id}`}>
+              <div className="committee-section-heading"><div><span>Work</span><h5 id={`committee-tasks-${activeCommittee.id}`}>Tasks</h5></div><strong>{activeCommitteeTasks.length} total</strong></div>
+              {activeCommitteeTasks.length === 0 ? <p className="committee-empty">No tasks have been added for this team yet.</p> : <div className="committee-task-list">{activeCommitteeTasks.map((task) => <article key={task.id}>
+                <div><span className={`task-status task-status--${task.status}`}>{task.status.replaceAll('_', ' ')}</span><h6>{task.title}</h6><p>{task.description || 'No description has been added.'}</p></div>
+                <dl><div><dt>Owner</dt><dd>{task.owner_display_name || 'Unassigned'}</dd></div><div><dt>Due</dt><dd>{task.due_date ? new Date(`${task.due_date}T00:00:00`).toLocaleDateString() : 'Not set'}</dd></div><div><dt>Priority</dt><dd>{task.priority}</dd></div></dl>
+              </article>)}</div>}
+            </section>
+            <div className="committee-people-grid">
+              <section className="committee-panel__section" aria-labelledby={`committee-key-${activeCommittee.id}`}>
+                <div className="committee-section-heading"><div><span>Leadership</span><h5 id={`committee-key-${activeCommittee.id}`}>Key people</h5></div><strong>{keyCommitteePeople.length}</strong></div>
+                {keyCommitteePeople.length === 0 ? <p className="committee-empty">No leads or coordinators have been assigned yet.</p> : <ul className="committee-roster committee-roster--key">{keyCommitteePeople.map((member) => <li key={member.profile_id}><span className="member-avatar" aria-hidden="true">{member.display_name.charAt(0).toUpperCase()}</span><span><strong>{member.display_name}</strong><small>{COMMITTEE_ROLE_LABELS[member.committee_role] || member.committee_role.replaceAll('_', ' ')}{member.department_code ? ` · ${member.department_code}` : ''}</small></span></li>)}</ul>}
+              </section>
+              <section className="committee-panel__section" aria-labelledby={`committee-roster-${activeCommittee.id}`}>
+                <div className="committee-section-heading"><div><span>Roster</span><h5 id={`committee-roster-${activeCommittee.id}`}>All registered members</h5></div><strong>{activeCommitteeMembers.length}</strong></div>
+                {activeCommitteeMembers.length === 0 ? <p className="committee-empty">No members are registered with this team yet.</p> : <ul className="committee-roster">{activeCommitteeMembers.map((member) => <li key={member.profile_id} className={member.active ? '' : 'is-inactive'}><span className="member-avatar" aria-hidden="true">{member.display_name.charAt(0).toUpperCase()}</span><span><strong>{member.display_name}</strong><small>{COMMITTEE_ROLE_LABELS[member.committee_role] || member.committee_role.replaceAll('_', ' ')}{member.department_code ? ` · ${member.department_code}` : ''}{member.active ? '' : ' · Inactive'}</small></span></li>)}</ul>}
+              </section>
+            </div>
+          </div>}
+        </>}
       </section>
 
       <section className="portal-card" id="task-board">
