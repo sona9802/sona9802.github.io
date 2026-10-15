@@ -226,14 +226,14 @@ h1 em, h2 em { color: var(--gold); font-weight: inherit; }
 .portal-message--success { border-color: #e6b85c; }
 .portal-message--error { border-color: #ff8d7c; }
 .portal-message--info { border-color: #ccb990; }
-.portal-workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; align-items: start; }
-.portal-sidebar { position: sticky; z-index: 5; top: .5rem; padding: 1rem 1.1rem; border: 1px solid rgb(255 255 255 / 16%); background: var(--burgundy-dark); box-shadow: 0 .8rem 2rem rgb(14 0 4 / 24%); }
+.portal-workspace { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2.5rem); align-items: start; }
+.portal-sidebar { position: sticky; z-index: 5; top: .5rem; max-height: calc(100vh - 1rem); padding: 1.1rem; overflow: hidden; border: 1px solid rgb(255 255 255 / 16%); background: var(--burgundy-dark); box-shadow: 0 .8rem 2rem rgb(14 0 4 / 24%); }
 .portal-welcome { display: grid; gap: .35rem; margin: 0 0 1rem; color: #cfbbb5; font-size: .78rem; }
 .portal-welcome strong { color: white; font-family: 'Playfair Display', Georgia, serif; font-size: 1.35rem; }
 .status-pill { display: inline-flex; width: fit-content; padding: .35rem .6rem; border-radius: 999px; color: var(--burgundy-dark); background: var(--gold); font-size: .65rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .status-pill--verified { color: #153425; background: #a7d9bb; }
-.portal-tabs { display: flex; gap: .5rem; margin-top: 1rem; padding: .2rem 0 .4rem; overflow-x: auto; scrollbar-color: var(--gold) rgb(255 255 255 / 10%); scrollbar-width: thin; }
-.portal-tabs button { flex: 0 0 auto; min-height: 2.55rem; padding: .6rem .9rem; border: 1px solid rgb(255 255 255 / 20%); border-radius: 999px; color: #f2e4dc; background: rgb(255 255 255 / 4%); font: inherit; font-size: .76rem; font-weight: 700; cursor: pointer; }
+.portal-tabs { display: grid; gap: .35rem; max-height: calc(100vh - 9.5rem); margin-top: 1rem; padding: .2rem .4rem .4rem 0; overflow-y: auto; scrollbar-color: var(--gold) rgb(255 255 255 / 10%); scrollbar-width: thin; }
+.portal-tabs button { width: 100%; min-height: 2.55rem; padding: .6rem .75rem; border: 1px solid rgb(255 255 255 / 16%); border-radius: .35rem; color: #f2e4dc; background: rgb(255 255 255 / 4%); font: inherit; font-size: .76rem; font-weight: 700; text-align: left; cursor: pointer; }
 .portal-tabs button:hover { border-color: var(--gold); background: rgb(255 255 255 / 9%); }
 .portal-tabs button.is-active { border-color: var(--gold); color: var(--burgundy-dark); background: var(--gold); box-shadow: 0 .35rem .9rem rgb(0 0 0 / 18%); }
 .portal-main { min-width: 0; }
@@ -411,8 +411,9 @@ footer nav { justify-self: end; }
   .member-portal--closed > p:last-child { grid-column: auto; }
   .portal-heading { align-items: start; }
   .portal-workspace { grid-template-columns: 1fr; }
-  .portal-sidebar { position: static; }
-  .portal-tabs { margin-inline: -.25rem; padding-inline: .25rem; }
+  .portal-sidebar { position: static; max-height: none; }
+  .portal-tabs { display: flex; max-height: none; margin-inline: -.25rem; padding-inline: .25rem; overflow-x: auto; overflow-y: hidden; }
+  .portal-tabs button { flex: 0 0 auto; width: auto; border-radius: 999px; }
   .portal-auth, .portal-form-grid { grid-template-columns: 1fr; }
   .portal-auth > div, .portal-span { grid-column: auto; }
   .portal-signin-guide header, .portal-signin-guide__steps { grid-template-columns: 1fr; }

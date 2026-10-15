@@ -82,7 +82,7 @@ Verified locally on October 14, 2026:
 
 Committee workspace enhancement verified on October 14, 2026: keyboard-accessible team tabs, selected-team responsibilities and deliverables, task summaries, active key people, full registered rosters, responsive layouts, and privacy-safe backend feeds.
 
-Member portal navigation enhancement verified on October 14, 2026: the previous long scrolling workspace was replaced with responsive, role-aware tabs for member, organizer, editorial, event, finance, service, and governance sections. Hash-based deep links and keyboard navigation are preserved.
+Member portal navigation enhancement verified on October 14, 2026: the previous long scrolling workspace was replaced with a persistent left-side tab panel for member, organizer, editorial, event, finance, service, and governance sections. On narrow screens the same role-aware tabs become a compact horizontal scroller. Hash-based deep links and keyboard navigation are preserved.
 
 Production deployment and verification completed on October 14, 2026.
 

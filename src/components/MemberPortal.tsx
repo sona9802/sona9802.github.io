@@ -369,7 +369,7 @@ export function MemberPortal() {
           <aside className="portal-sidebar">
             <p className="portal-welcome">Welcome back,<strong>{profile.preferred_name || profile.full_name}</strong></p>
             <span className={`status-pill status-pill--${profile.verification_status}`}>{profile.verification_status}</span>
-            <nav className="portal-tabs" aria-label="Member portal sections" role="tablist" aria-orientation="horizontal">
+            <nav className="portal-tabs" aria-label="Member portal sections" role="tablist">
               {portalTabs.map((tab, index) => <button
                 id={`portal-tab-${tab.id}`}
                 className={activePortalTab === tab.id ? 'is-active' : ''}
